@@ -12,7 +12,7 @@ var radius = 0
 var belt = 0
 
 func _ready():
-	generate()
+	generate(true)
 	
 func _process(delta):
 	var vp = get_viewport().get_size_override()
@@ -98,7 +98,7 @@ func goto_new_system():
 	$Player.travel(false)
 	state = State.NORMAL
 		
-func generate():
+func generate(first = false):
 	yield($Background.generate(), "completed")
 	
 	var star = Planet.instance()
@@ -114,17 +114,31 @@ func generate():
 	var revolve_dir = 1 if G.rng.randf() < 0.9 else -1
 	
 	radius = star.diameter + 200
-	for i in G.rng.randi_range(4, 9):
-		if i > 0 and belt == 0 and G.rng.randf() < 0.15 * i:
-			print("belt!")
-			belt = radius
-			radius += G.rng.randi_range(600, 1000)
-			continue
-		#print("planet")
+	for i in G.rng.randi_range(6 if first else 3, 9):
+		if first:
+			if i == 3:
+				radius += 200
+				belt = radius
+				radius += G.rng.randi_range(600, 1000)
+				continue
+		else:
+			if i > 0 and belt == 0 and G.rng.randf() < 0.15 * i:
+				radius += 100
+				belt = radius
+				radius += G.rng.randi_range(600, 1000)
+				continue
 		var pos = Vector2.RIGHT.rotated(G.rng.randf_range(0, 2 * PI)) * radius
-		radius += G.rng.randi_range(400, 800) * G.rng.randf_range(1, (i + 2) / 2.0)
+		radius += G.rng.randi_range(500, 800) * G.rng.randf_range(1, (i + 2) / 2.0)
 		var planet = Planet.instance()
-		planet.generate(i + 1)
+		if first and i == 2:
+			planet.radius = 30
+			planet.base_color = Color.green
+			planet.generate_planet(i + 1)
+			$Player.parent = planet
+			print("parent ", planet)
+		else:
+			planet.generate(i + 1)
+			print("other ", planet, i)
 		$Planets.add_child(planet)
 		planet.position = pos
 		planet.revolve_around = star

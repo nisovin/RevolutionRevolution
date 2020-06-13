@@ -1,13 +1,18 @@
 extends RigidBody2D
 
+enum State { START, ORBITING, FREE, TRAVELING }
+
+var state = State.ORBITING
+
 var acceleration = 200
-var max_speed = 400
+var max_speed = 500
 
 var size = 8
-var traveling = false
 var req_pos = null
 var req_vel = null
 
+var parent
+var angle = 0
 var asteroids = []
 
 func _ready():
@@ -17,10 +22,7 @@ func _ready():
 	mass = 2
 	$Planet.remove_body()
 	$Planet.generate_planet(1)
-	$CollisionShape2D.shape = CircleShape2D.new()
-	$CollisionShape2D.shape.radius = $Planet.radius * 2
 	$Planet/Label.hide()
-	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("capture"):
@@ -50,7 +52,10 @@ func _unhandled_input(event):
 		$CollisionShape2D.shape.radius = $Planet.radius * 2
 
 func travel(t):
-	traveling = t
+	if t:
+		state = State.TRAVELING
+	else:
+		state = State.FREE
 	asteroids = []
 	$CanvasLayer/AsteroidLabel.text = "Asteroids: " + str(asteroids.size())
 
@@ -67,12 +72,31 @@ func set_position_and_velocity(pos, vel):
 	sleeping = false
 	print('a ',position)
 
-func _integrate_forces(state):
+func _process(delta):
+	if state == State.START or state == State.ORBITING:
+		if parent != null:
+			$Camera2D.global_position = parent.global_position
+	elif $Camera2D.position != Vector2.ZERO:
+		$Camera2D.position = $Camera2D.position.linear_interpolate(Vector2.ZERO, 1 * delta)
+		if $Camera2D.position.length_squared() < 1:
+			$Camera2D.position = Vector2.ZERO
+			set_process(false)
+			print("done")
+
+func _physics_process(delta):
+	if state == State.START or state == State.ORBITING:
+		if parent == null: return
+		angle += PI / 4 * delta
+		position = parent.position + Vector2.RIGHT.rotated(angle) * 130
+
+func _integrate_forces(_state):
+	if state == State.START: return
+	
 	if req_pos != null:
-		state.transform.origin = req_pos
+		_state.transform.origin = req_pos
 		req_pos = null
 	if req_vel != null:
-		state.linear_velocity = req_vel
+		_state.linear_velocity = req_vel
 		req_vel = null
 	
 	var v = Vector2.ZERO
@@ -86,14 +110,19 @@ func _integrate_forces(state):
 	if v == Vector2.ZERO:
 		applied_force = -position.normalized() * acceleration * 0.01
 	else:
-		var vel_dir = state.linear_velocity.normalized()
+		if state == State.ORBITING:
+			state = State.FREE
+			set_deferred("mode", RigidBody2D.MODE_CHARACTER)
+			print("FREE!")
+			return
+		var vel_dir = _state.linear_velocity.normalized()
 		applied_force = v * acceleration * (2 - ((v.dot(vel_dir) + 1) / 2))
 	
-	state.linear_velocity = state.linear_velocity.clamped(max_speed)
+	_state.linear_velocity = _state.linear_velocity.clamped(max_speed)
 	
-	if traveling:
+	if state == State.TRAVELING:
 		$CanvasLayer/SpeedLabel.text = "Speed: " + str(1000000 + G.rng.randi_range(1000, 100000)) + " xel/s"
 		$CanvasLayer/PositionLabel.text = "Positon: ???"
 	else:
-		$CanvasLayer/SpeedLabel.text = "Speed: " + str(ceil(min(max_speed, state.linear_velocity.length()))) + " xel/s"
+		$CanvasLayer/SpeedLabel.text = "Speed: " + str(ceil(min(max_speed * 10, _state.linear_velocity.length()))) + " xel/s"
 		$CanvasLayer/PositionLabel.text = "Position: " + str(floor(position.x / 10)) + ", " + str(floor(position.y / 10))

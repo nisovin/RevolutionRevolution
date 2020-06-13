@@ -49,6 +49,7 @@ func capture(t):
 func fire(dir):
 	state = State.FIRE
 	fire_dir = dir
+	$Sprite.modulate = Color.red
 	set_deferred("collision_layer", 8)
 	set_deferred("collision_mask", 2)
 	set_deferred("contact_monitor", true)
@@ -56,7 +57,11 @@ func fire(dir):
 	
 func generate():
 	dist = position.length()
-	size = G.rng.randi_range(2, 12)
+	size = G.rng.randi_range(2, 6)
+	if G.rng.randf() < 0.2:
+		size *= 2
+		if G.rng.randf() < 0.1:
+			size *= 2
 	#mass = PI * size * size
 	speed = G.rng.randf_range(25, 50)
 	color = Color.from_hsv(G.rng.randf_range(0.05, 0.2), G.rng.randf_range(0.05, 0.25), G.rng.randf_range(0.4, 0.7))
@@ -78,6 +83,8 @@ func generate():
 
 	$CollisionShape2D.shape = CircleShape2D.new()
 	$CollisionShape2D.shape.radius = size * 2 * 0.9
+	
+	apply_torque_impulse(G.rng.randf_range(-20, 20))
 	
 func _on_Asteroid_body_entered(body):
 	print("collide")

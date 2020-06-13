@@ -84,6 +84,7 @@ capture={
 [physics]
 
 2d/default_gravity=0
+2d/default_angular_damp=0.0
 
 [rendering]
 

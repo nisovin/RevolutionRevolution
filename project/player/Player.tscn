@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://planets/Planet.tscn" type="PackedScene" id=1]
 [ext_resource path="res://player/Player.gd" type="Script" id=2]
@@ -6,6 +6,9 @@
 
 [sub_resource type="PhysicsMaterial" id=1]
 bounce = 1.0
+
+[sub_resource type="CircleShape2D" id=4]
+radius = 16.0
 
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 3 )
@@ -15,11 +18,12 @@ radius = 170.0
 
 [node name="Player" type="RigidBody2D"]
 collision_mask = 6
-mode = 2
+mode = 3
 physics_material_override = SubResource( 1 )
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 4 )
 
 [node name="Planet" parent="." instance=ExtResource( 1 )]
 
