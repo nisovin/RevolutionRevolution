@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Planet.gd" type="Script" id=1]
+[ext_resource path="res://Kenney Mini.ttf" type="DynamicFontData" id=2]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
@@ -24,6 +25,13 @@ shader_param/color = null
 shader_param/speed = 1.0
 shader_param/density = 0.5
 
+[sub_resource type="DynamicFont" id=3]
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="CircleShape2D" id=4]
+resource_local_to_scene = true
+
 [node name="Planet" type="Node2D"]
 script = ExtResource( 1 )
 
@@ -31,7 +39,20 @@ script = ExtResource( 1 )
 material = SubResource( 2 )
 scale = Vector2( 2, 2 )
 
-[node name="Sprite2" type="Sprite" parent="."]
-visible = false
-position = Vector2( 475, 162 )
-scale = Vector2( 4, 4 )
+[node name="Label" type="Label" parent="."]
+margin_left = -100.0
+margin_top = -25.0
+margin_right = 100.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 3 )
+text = "Planet"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource( 4 )

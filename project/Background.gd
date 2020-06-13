@@ -22,7 +22,7 @@ func _ready():
 	
 func _unhandled_key_input(event):
 	if event.is_action_pressed("ui_accept"):
-		generate()
+		pass #generate()
 		
 func generate():
 	
@@ -60,7 +60,7 @@ func generate():
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
-		var type = G.rng.randi_range(0, 10)
+		var type = G.rng.randi_range(0, 12)
 		img.set_pixelv(v, c)
 		if (type == 0 || type == 1) and v.x < mid_size - 2 and v.y < mid_size - 2:
 			img.set_pixelv(v + Vector2.RIGHT, c)
@@ -71,6 +71,11 @@ func generate():
 			img.set_pixelv(v + Vector2.DOWN, c)
 			img.set_pixelv(v + Vector2.UP, c)
 			img.set_pixelv(v + Vector2.RIGHT, c)
+		elif (type == 4) and v.x < mid_size - 3 and v.y < mid_size - 3:
+			img.set_pixelv(v + Vector2(1,1), c)
+			img.set_pixelv(v + Vector2(2,2), c)
+			img.set_pixelv(v + Vector2(0,2), c)
+			img.set_pixelv(v + Vector2(2,0), c)
 	img.unlock()
 	tex = ImageTexture.new()
 	tex.create_from_image(img, Texture.FLAG_REPEAT)
@@ -87,17 +92,22 @@ func generate():
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
-		var type = G.rng.randi_range(0, 10)
+		var type = G.rng.randi_range(0, 15)
 		img.set_pixelv(v, c)
-		if (type == 0 || type == 1) and v.x < near_size - 2 and v.y < near_size - 2:
+		if (type == 0 || type == 1 || type == 2) and v.x < near_size - 2 and v.y < near_size - 2:
 			img.set_pixelv(v + Vector2.RIGHT, c)
 			img.set_pixelv(v + Vector2.DOWN, c)
 			img.set_pixelv(v + Vector2.ONE, c)
-		elif (type == 2 || type == 3) and v.x < near_size - 2 and v.y < near_size - 2:
+		elif (type == 3) and v.x < near_size - 2 and v.y < near_size - 2:
 			img.set_pixelv(v + Vector2.LEFT, c)
 			img.set_pixelv(v + Vector2.DOWN, c)
 			img.set_pixelv(v + Vector2.UP, c)
 			img.set_pixelv(v + Vector2.RIGHT, c)
+		elif (type == 4) and v.x < mid_size - 3 and v.y < mid_size - 3:
+			img.set_pixelv(v + Vector2(1,1), c)
+			img.set_pixelv(v + Vector2(2,2), c)
+			img.set_pixelv(v + Vector2(0,2), c)
+			img.set_pixelv(v + Vector2(2,0), c)
 	img.unlock()
 	tex = ImageTexture.new()
 	tex.create_from_image(img, Texture.FLAG_REPEAT)
@@ -129,7 +139,7 @@ func generate():
 	img = noise.get_seamless_image(far_size / 2)
 	tex = ImageTexture.new()
 	tex.create_from_image(img, Texture.FLAG_REPEAT)
-	hue = G.rng.randf_range(0.6, 1.6)
+	hue = G.rng.randf_range(0.5, 1.2)
 	if hue > 1: hue -= 1
 	color = Color.from_hsv(hue, G.rng.randf_range(0.2, 0.4), G.rng.randf_range(0.7, 1.0))
 	mat = far_gas1.material
@@ -159,9 +169,9 @@ func generate():
 	img = noise.get_seamless_image(mid_size / 2)
 	tex = ImageTexture.new()
 	tex.create_from_image(img, Texture.FLAG_REPEAT)
-	hue = G.rng.randf_range(0.6, 1.6)
+	hue = G.rng.randf_range(0.5, 1.2)
 	if hue > 1: hue -= 1
-	color = Color.from_hsv(hue, G.rng.randf_range(0.2, 0.4), G.rng.randf_range(0.7, 1.0))
+	color = Color.from_hsv(hue, G.rng.randf_range(0.2, 0.6), G.rng.randf_range(0.7, 1.0))
 	mat = mid_gas1.material
 	mat.set_shader_param("color", color)
 	mat.set_shader_param("fade", G.rng.randf_range(0.5, 0.8))
