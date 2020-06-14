@@ -82,7 +82,7 @@ func generate():
 	img.create(far_size, far_size, false, Image.FORMAT_RGBA8)
 	img.lock()
 	for i in G.rng.randi_range(1000, 2000):
-		var v = Vector2(G.rng.randi_range(0, far_size - 1), G.rng.randi_range(0, far_size - 1))
+		var v = Vector2(G.rng.randi_range(1, far_size - 1), G.rng.randi_range(1, far_size - 1))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
@@ -98,7 +98,7 @@ func generate():
 	img.create(far_size, far_size, false, Image.FORMAT_RGBA8)
 	img.lock()
 	for i in G.rng.randi_range(600, 1500):
-		var v = Vector2(G.rng.randi_range(0, far_size - 1), G.rng.randi_range(0, far_size - 1))
+		var v = Vector2(G.rng.randi_range(1, far_size - 1), G.rng.randi_range(1, far_size - 1))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
@@ -114,7 +114,7 @@ func generate():
 	img.create(far_size, far_size, false, Image.FORMAT_RGBA8)
 	img.lock()
 	for i in G.rng.randi_range(500, 1000):
-		var v = Vector2(G.rng.randi_range(0, far_size - 1), G.rng.randi_range(0, far_size - 1))
+		var v = Vector2(G.rng.randi_range(1, far_size - 1), G.rng.randi_range(1, far_size - 1))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
@@ -130,7 +130,7 @@ func generate():
 	img.create(mid_size, mid_size, false, Image.FORMAT_RGBA8)
 	img.lock()
 	for i in G.rng.randi_range(400, 800):
-		var v = Vector2(G.rng.randi_range(0, mid_size - 3), G.rng.randi_range(0, mid_size - 3))
+		var v = Vector2(G.rng.randi_range(1, mid_size - 3), G.rng.randi_range(1, mid_size - 3))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
 		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
@@ -160,11 +160,11 @@ func generate():
 	img = Image.new()
 	img.create(near_size, near_size, false, Image.FORMAT_RGBA8)
 	img.lock()
-	for i in G.rng.randi_range(50, 150):
-		var v = Vector2(G.rng.randi_range(0, near_size - 3), G.rng.randi_range(0, near_size - 3))
+	for i in G.rng.randi_range(150, 250):
+		var v = Vector2(G.rng.randi_range(1, near_size - 3), G.rng.randi_range(1, near_size - 3))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
-		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), 1.0)
+		var c = Color.from_hsv(h, G.rng.randf_range(0, 0.3), G.rng.randf_range(0.2, 0.5))
 		var type = G.rng.randi_range(0, 15)
 		img.set_pixelv(v, c)
 		if (type == 0 || type == 1 || type == 2) and v.x < near_size - 2 and v.y < near_size - 2:

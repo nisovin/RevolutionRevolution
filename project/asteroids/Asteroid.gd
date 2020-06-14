@@ -12,7 +12,7 @@ var dist = 0
 
 var captor = null
 var rot = 0
-var fire_dir
+var fire_vel
 
 func _integrate_forces(_state):
 	if state == State.ORBITING:
@@ -26,17 +26,16 @@ func _integrate_forces(_state):
 		var d = position.distance_to(target)
 		applied_force = dir * speed * (d / 5)
 	elif state == State.FIRE:
-		applied_force = fire_dir * speed * 5
-		_state.linear_velocity = fire_dir * speed * 20
+		applied_force = fire_vel
+		_state.linear_velocity = fire_vel * 3
 		state = State.PROJECTILE
 		
 func _physics_process(delta):
 	if state == State.CAPTURED:
 		rot += 2 * PI * delta / 5
-		
+
 func capture(t):
 	if state != State.ORBITING: return false
-	print("capturing", self)
 	state = State.CAPTURED
 	captor = t
 	dist = captor.position.distance_to(position) * 0.7
@@ -44,11 +43,15 @@ func capture(t):
 		dist = size * 3
 	set_deferred("collision_layer", 0)
 	set_deferred("collision_mask", 0)
+	$Dialog.text = G.rand_dialog("asteroid")
+	$Tween.interpolate_property($Dialog, "modulate", Color.transparent, Color.white, 0.3)
+	$Tween.interpolate_property($Dialog, "modulate", Color.white, Color.transparent, 0.3, Tween.TRANS_LINEAR, Tween.EASE_IN, 1.5)
+	$Tween.start()
 	return true
 	
-func fire(dir):
+func fire(vel):
 	state = State.FIRE
-	fire_dir = dir
+	fire_vel = vel
 	$Sprite.modulate = Color.red
 	set_deferred("collision_layer", 8)
 	set_deferred("collision_mask", 2)
@@ -90,4 +93,5 @@ func _on_Asteroid_body_entered(body):
 	print("collide")
 	if state == State.PROJECTILE and body.is_in_group("planets"):
 		print("ouch")
+		Audio.play("break", 0.4)
 		queue_free()

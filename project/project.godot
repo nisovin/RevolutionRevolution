@@ -15,13 +15,14 @@ _global_script_class_icons={
 
 [application]
 
-config/name="RevolutionRevolution"
-run/main_scene="res://universe/SolarSystem.tscn"
+config/name="Revolution Revolution"
+run/main_scene="res://main/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-G="*res://G.gd"
+G="*res://main/G.gd"
+Audio="*res://main/Audio.gd"
 
 [display]
 

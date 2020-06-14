@@ -5,25 +5,26 @@
 [ext_resource path="res://Kenney Mini.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="PhysicsMaterial" id=1]
-bounce = 1.0
+bounce = 0.5
 
-[sub_resource type="CircleShape2D" id=4]
+[sub_resource type="CircleShape2D" id=2]
 radius = 16.0
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=3]
 font_data = ExtResource( 3 )
 
-[sub_resource type="CircleShape2D" id=3]
+[sub_resource type="CircleShape2D" id=4]
 radius = 170.0
 
 [node name="Player" type="RigidBody2D"]
 collision_mask = 6
 mode = 3
+mass = 2.0
 physics_material_override = SubResource( 1 )
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 4 )
+shape = SubResource( 2 )
 
 [node name="Planet" parent="." instance=ExtResource( 1 )]
 
@@ -33,40 +34,49 @@ current = true
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="SpeedLabel" type="Label" parent="CanvasLayer"]
+visible = false
 margin_left = 2.58827
 margin_top = 0.647072
 margin_right = 112.588
 margin_bottom = 20.6471
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Speed:"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="PositionLabel" type="Label" parent="CanvasLayer"]
+visible = false
 margin_left = 2.9118
 margin_top = 19.8235
 margin_right = 112.912
 margin_bottom = 39.8235
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Position:"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="AsteroidLabel" type="Label" parent="CanvasLayer"]
-margin_left = 2.57124
-margin_top = 36.8516
-margin_right = 112.571
-margin_bottom = 56.8516
-custom_fonts/font = SubResource( 2 )
-text = "Asteroids: 0"
+visible = false
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -134.0
+margin_top = -26.0
+margin_right = -7.0
+margin_bottom = -6.0
+custom_fonts/font = SubResource( 3 )
+text = "Followers: 0"
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ShoutRange" type="Area2D" parent="."]
 monitorable = false
+collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShoutRange"]
-shape = SubResource( 3 )
+shape = SubResource( 4 )

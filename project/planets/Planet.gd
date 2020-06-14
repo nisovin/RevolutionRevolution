@@ -21,6 +21,24 @@ func _process(delta):
 		v = v.rotated(deg2rad(revolve_speed) * delta)
 		position = revolve_around.position + v
 
+func set_as_player():
+	is_player = true
+	$StaticBody2D.queue_free()
+	$NameLabel.hide()
+
+func speak(text, duration, target):
+	$Dialog/Text.text = ""
+	$Dialog/Text.rect_size = Vector2.ZERO
+	yield(get_tree(), "idle_frame")
+	$Dialog/Text.text = text
+	yield(get_tree(), "idle_frame")
+	var pos = global_position.direction_to(target) * (diameter + 20)
+	$Dialog/Text.rect_position = pos - ($Dialog/Text.rect_size / 2)
+	$Tween.stop_all()
+	$Tween.interpolate_property($Dialog, "modulate", Color.transparent, Color.white, 0.5)
+	$Tween.interpolate_property($Dialog, "modulate", Color.white, Color.transparent, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN, duration + 0.5)
+	$Tween.start()
+
 func generate(index):
 	if index == 0:
 		radius = G.rng.randi_range(80, 150)
@@ -29,17 +47,12 @@ func generate(index):
 		radius = G.rng.randi_range(15, 30 + index * 5)
 		base_color = Color.from_hsv(G.rng.randf_range(0.3, 0.95), G.rng.randf_range(0.8, 1.0), G.rng.randf_range(0.5, 0.9))
 	generate_planet(index)
-
-func remove_body():
-	$StaticBody2D.queue_free()
-
+	
 func generate_planet(index):
 	diameter = radius * 2 + 1
 	if not is_player:
 		if index > 0:
 			$StaticBody2D/CollisionShape2D.shape.radius = radius * 2
-		else:
-			remove_body()
 		
 	var rad_sq = radius * radius
 	var center = Vector2(radius, radius)
@@ -85,7 +98,7 @@ func generate_planet(index):
 	
 	if index == 0:
 		$Sprite.material = null
-		$Label.text = "Sun"
+		$NameLabel.text = "Sun"
 		return
 	
 	var noise = OpenSimplexNoise.new()
@@ -94,7 +107,6 @@ func generate_planet(index):
 	#noise.octaves = G.rng.randi_range(2, 5)
 	noise.period = G.rng.randf_range(20, 100)
 	noise.persistence = G.rng.randf_range(0.25, 0.75)
-	#print(noise.lacunarity, " ", noise.octaves, " ", noise.period, " ", noise.persistence)
 	var noise_img = noise.get_seamless_image(diameter * 2)
 	var noise_tex = ImageTexture.new()
 	noise_tex.create_from_image(noise_img, 0)
@@ -121,7 +133,10 @@ func generate_planet(index):
 	else:
 		$Sprite.rotation = 0
 
-	$Label.text = prefixes[G.rng.randi_range(0, prefixes.size() - 1)] + infixes[G.rng.randi_range(0, infixes.size() - 1)] + suffixes[G.rng.randi_range(0, suffixes.size() - 1)]
-	$Label.modulate = base_color.lightened(0.7)
-	$Label.rect_position.y -= radius * 2 + 20
-	print($Label.text)
+	$NameLabel.text = prefixes[G.rng.randi_range(0, prefixes.size() - 1)] + infixes[G.rng.randi_range(0, infixes.size() - 1)] + suffixes[G.rng.randi_range(0, suffixes.size() - 1)]
+	$NameLabel.set("custom_colors/font_color", base_color.lightened(0.6))
+	$NameLabel.set("custom_colors/font_outline_modulate", base_color.darkened(0.6))
+	$NameLabel.rect_position.y -= radius * 2 + 20
+	
+	$Dialog/Text.set("custom_colors/font_color", base_color.lightened(0.8))
+	$Dialog/Text.set("custom_colors/font_color_shadow", base_color.darkened(0.4))

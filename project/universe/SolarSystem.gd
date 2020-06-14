@@ -11,9 +11,6 @@ var bodies = []
 var radius = 0
 var belt = 0
 
-func _ready():
-	generate(true)
-	
 func _process(delta):
 	var vp = get_viewport().get_size_override()
 	var center = vp / 2
@@ -21,7 +18,7 @@ func _process(delta):
 	var min_dim = min(vp.x, vp.y)
 	var max_y = vp.y / 2 - 4
 	var max_x = vp.x / 2 - 4
-	var player_pos = $Player.position
+	var player_pos = G.player.position
 	for b in bodies:
 		var ind = b.indicator
 		var body_pos
@@ -49,23 +46,22 @@ func _process(delta):
 		ind.position = pos
 		ind.set_arrow_rotation(dir.angle())
 		ind.set_label_text(str(floor(dist / 10)))
-		ind.visible = dist > min_dim
+		ind.visible = b.indvis and dist > min_dim
 		
 func _physics_process(delta):
 	
-	if $Player.position.length_squared() > radius * radius:
-	#if Input.is_action_just_pressed("ui_accept"):
+	if G.player.position.length_squared() > radius * radius:
 		if state == State.NORMAL:
 			goto_new_system()
 		
 func goto_new_system():
 	state = State.TRAVELING
 	bodies = []
-	$Player.travel(true)
+	G.player.travel(true)
 	
 	var start = OS.get_ticks_msec()
 	
-	var player_dir = $Player.position.normalized()
+	var player_dir = G.player.position.normalized()
 	$Background.goto_warp(player_dir)
 	$Tween.interpolate_property($Planets, "modulate", Color.white, Color.transparent, 0.5)
 	$Tween.interpolate_property($Asteroids, "modulate", Color.white, Color.transparent, 0.5)
@@ -84,7 +80,7 @@ func goto_new_system():
 	belt = 0
 	yield(generate(), "completed")
 	
-	$Player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * $Player.max_speed)
+	G.player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * G.player.max_speed)
 	
 	var wait = 10000 - (OS.get_ticks_msec() - start)
 	if wait > 0:
@@ -95,7 +91,7 @@ func goto_new_system():
 	$Tween.interpolate_property($Indicators/I, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.start()
 	
-	$Player.travel(false)
+	G.player.travel(false)
 	state = State.NORMAL
 		
 func generate(first = false):
@@ -108,7 +104,7 @@ func generate(first = false):
 	ind.color = star.base_color
 	ind.type = "star"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "star", "body": star, "indicator": ind})
+	bodies.append({"type": "star", "body": star, "indicator": ind, "indvis": !first})
 	yield(get_tree(), "idle_frame")
 	
 	var revolve_dir = 1 if G.rng.randf() < 0.9 else -1
@@ -134,11 +130,9 @@ func generate(first = false):
 			planet.radius = 30
 			planet.base_color = Color.green
 			planet.generate_planet(i + 1)
-			$Player.parent = planet
-			print("parent ", planet)
+			G.player.parent = planet
 		else:
 			planet.generate(i + 1)
-			print("other ", planet, i)
 		$Planets.add_child(planet)
 		planet.position = pos
 		planet.revolve_around = star
@@ -146,7 +140,7 @@ func generate(first = false):
 		ind = PlanetIndicator.instance()
 		ind.color = planet.base_color
 		$Indicators/I.add_child(ind)
-		bodies.append({"type": "planet", "body": planet, "indicator": ind})
+		bodies.append({"type": "planet", "body": planet, "indicator": ind, "indvis": !first})
 		yield(get_tree(), "idle_frame")
 
 	if belt == 0:
@@ -167,7 +161,7 @@ func generate(first = false):
 	ind.color = Color.lightgray
 	ind.type = "asteroids"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "belt", "belt": belt, "indicator": ind})
+	bodies.append({"type": "belt", "belt": belt, "indicator": ind, "indvis": !first})
 	yield(get_tree(), "idle_frame")
 
 	var r = star.diameter + 300
@@ -184,4 +178,4 @@ func generate(first = false):
 	ind.color = Color.magenta
 	ind.type = "exit"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "exit", "distance": radius, "indicator": ind})
+	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first})

@@ -1,11 +1,16 @@
 extends RigidBody2D
 
+signal left_home
+signal reached_belt
+signal captured_asteroid
+
 enum State { START, ORBITING, FREE, TRAVELING }
 
-var state = State.ORBITING
+var state = State.START
 
-var acceleration = 200
+var acceleration = 400
 var max_speed = 500
+var fire_speed = 80
 
 var size = 8
 var req_pos = null
@@ -14,42 +19,57 @@ var req_vel = null
 var parent
 var angle = 0
 var asteroids = []
+var have_reached_belt = false
+var have_captured = false
 
 func _ready():
-	$Planet.is_player = true
+	G.player = self
+	$Planet.set_as_player()
 	$Planet.base_color = Color.cyan
 	$Planet.radius = size
-	mass = 2
-	$Planet.remove_body()
 	$Planet.generate_planet(1)
-	$Planet/Label.hide()
+	
+func speak(text, duration, target):
+	$Planet.speak(text, duration, target)
 
 func _unhandled_input(event):
+	if state != State.FREE: return
 	if event.is_action_pressed("capture"):
+		speak(G.rand_dialog("call_out"), 1.0, position + Vector2.DOWN * 100)
 		for body in $ShoutRange.get_overlapping_bodies():
 			if body.is_in_group("asteroids"):
-				if body.size < size * .75:
+				if body.size < size * .75 and asteroids.size() < 15:
 					var cap = body.capture(self)
 					if cap:
 						asteroids.append(body)
-		$CanvasLayer/AsteroidLabel.text = "Asteroids: " + str(asteroids.size())
+						if not have_captured:
+							have_captured = true
+							call_deferred("emit_signal", "captured_asteroid")
+			elif body.is_in_group("planets"):
+				yield(get_tree().create_timer(1), "timeout")
+				body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
+		update_asteroid_label()
 	elif event.is_action_pressed("fire"):
 		var target = get_global_mouse_position()
 		var to_fire = null
 		var farthest = 0
 		for a in asteroids:
-			var d = a.position.distance_squared_to(target)
+			var d = a.global_position.distance_squared_to(target)
 			if farthest == 0 or d > farthest:
 				farthest = d
 				to_fire = a
 		if to_fire != null:
-			to_fire.fire(to_fire.position.direction_to(target))
+			to_fire.fire(to_fire.global_position.direction_to(target) * fire_speed)
+			Audio.play("launch", 0.5)
 			asteroids.erase(to_fire)
-			$CanvasLayer/AsteroidLabel.text = "Asteroids: " + str(asteroids.size())
+			update_asteroid_label()
 	elif event.is_action_pressed("ui_page_up"):
 		$Planet.radius += 1
 		$Planet.generate_planet(1)
 		$CollisionShape2D.shape.radius = $Planet.radius * 2
+
+func start():
+	state = State.ORBITING
 
 func travel(t):
 	if t:
@@ -57,12 +77,15 @@ func travel(t):
 	else:
 		state = State.FREE
 	asteroids = []
-	$CanvasLayer/AsteroidLabel.text = "Asteroids: " + str(asteroids.size())
+	update_asteroid_label()
+
+func update_asteroid_label():
+	if asteroids.size() > 0:
+		$CanvasLayer/AsteroidLabel.visible = true
+	$CanvasLayer/AsteroidLabel.text = "Followers: " + str(asteroids.size())
 
 func set_position_and_velocity(pos, vel):
 	sleeping = true
-	print('b ',position)
-	print('t ', pos)
 	yield(get_tree(), "physics_frame")
 	yield(get_tree(), "physics_frame")
 	req_pos = pos
@@ -70,7 +93,6 @@ func set_position_and_velocity(pos, vel):
 	yield(get_tree(), "physics_frame")
 	yield(get_tree(), "physics_frame")
 	sleeping = false
-	print('a ',position)
 
 func _process(delta):
 	if state == State.START or state == State.ORBITING:
@@ -81,7 +103,6 @@ func _process(delta):
 		if $Camera2D.position.length_squared() < 1:
 			$Camera2D.position = Vector2.ZERO
 			set_process(false)
-			print("done")
 
 func _physics_process(delta):
 	if state == State.START or state == State.ORBITING:
@@ -113,7 +134,7 @@ func _integrate_forces(_state):
 		if state == State.ORBITING:
 			state = State.FREE
 			set_deferred("mode", RigidBody2D.MODE_CHARACTER)
-			print("FREE!")
+			call_deferred("emit_signal", "left_home")
 			return
 		var vel_dir = _state.linear_velocity.normalized()
 		applied_force = v * acceleration * (2 - ((v.dot(vel_dir) + 1) / 2))
