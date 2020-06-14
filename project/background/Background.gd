@@ -29,6 +29,11 @@ func _ready():
 	$ParallaxBackground/MidGas.motion_mirroring = Vector2(mid_size, mid_size)
 	$ParallaxBackground/NearStars.motion_mirroring = Vector2(near_size, near_size) * 2
 	
+	for child in $ParallaxBackground.get_children():
+		for sprite in child.get_children():
+			sprite.position = child.motion_mirroring / 2
+		#child.motion_offset = child.motion_mirroring / -2
+	
 func _process(delta):
 	if state == State.WARP:
 		$ParallaxBackground/WarpSpeed.motion_offset += warp_dir * 1500 * delta

@@ -3,6 +3,7 @@ extends RigidBody2D
 signal left_home
 signal reached_belt
 signal captured_asteroid
+signal been_rejected
 
 enum State { MENU, START, ORBITING, FREE, TRAVELING }
 
@@ -21,6 +22,7 @@ var angle = 0
 var asteroids = []
 var have_reached_belt = false
 var have_captured = false
+var have_been_rejected = false
 
 func _ready():
 	G.player = self
@@ -49,6 +51,9 @@ func _unhandled_input(event):
 			elif body.is_in_group("planets"):
 				yield(get_tree().create_timer(1), "timeout")
 				body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
+				if not have_been_rejected:
+					have_been_rejected = true
+					call_deferred("emit_signal", "been_rejected")
 		update_asteroid_label()
 	elif event.is_action_pressed("fire"):
 		var target = get_global_mouse_position()
@@ -157,11 +162,12 @@ func _integrate_forces(_state):
 		$CanvasLayer/SpeedLabel.text = "Speed: " + str(ceil(min(max_speed * 10, _state.linear_velocity.length()))) + " xel/s"
 		$CanvasLayer/PositionLabel.text = "Position: " + str(floor(position.x / 10)) + ", " + str(floor(position.y / 10))
 
-func _on_Player_input_event(viewport, event, shape_idx):
-	if state == State.MENU and event.is_action_pressed("move"):
+func cycle_color():
+	if state == State.MENU:
 		var h = $Planet.base_color.h
 		h += G.rng.randf_range(0.03, 0.07)
 		if h > 1: h -= 1
-		if h < 0.3: h += 0.3
+		if h < 0.33: h += 0.33
 		$Planet.base_color.h = h
+		$Planet.data = null
 		$Planet.generate_planet(1)

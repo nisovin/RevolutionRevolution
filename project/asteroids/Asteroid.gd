@@ -10,6 +10,7 @@ var points = []
 var colors = []
 var dist = 0
 
+var revolve_dir = 1
 var captor = null
 var rot = 0
 var fire_vel
@@ -17,7 +18,7 @@ var fire_vel
 func _integrate_forces(_state):
 	if state == State.ORBITING:
 		var expected = position.normalized() * dist
-		var target = expected + (position.normalized().rotated(PI / 2) * 200)
+		var target = expected + (position.normalized().rotated(PI / 2 * revolve_dir) * 200)
 		var dir = position.direction_to(target)
 		applied_force = dir * speed
 	elif state == State.CAPTURED:
@@ -93,8 +94,7 @@ func generate():
 	apply_torque_impulse(G.rng.randf_range(-20, 20))
 	
 func _on_Asteroid_body_entered(body):
-	print("collide")
 	if state == State.PROJECTILE and body.is_in_group("planets"):
-		print("ouch")
 		Audio.play("break", 0.4)
+		body.get_parent().take_damage(size)
 		queue_free()
