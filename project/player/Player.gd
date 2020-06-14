@@ -10,7 +10,7 @@ var state = State.MENU
 
 var acceleration = 400
 var max_speed = 500
-var fire_speed = 80
+var fire_speed = 150
 
 var size = 8
 var req_pos = null
@@ -28,6 +28,7 @@ func _ready():
 	$Planet.base_color = Color.cyan
 	$Planet.radius = size
 	$Planet.generate_planet(1)
+	$Camera2D.target = self
 	
 func speak(text, duration, target):
 	$Planet.speak(text, duration, target)
@@ -52,11 +53,11 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("fire"):
 		var target = get_global_mouse_position()
 		var to_fire = null
-		var farthest = 0
+		var nearest = 0
 		for a in asteroids:
-			var d = a.global_position.distance_squared_to(target)
-			if farthest == 0 or d > farthest:
-				farthest = d
+			var d = a.global_position.distance_squared_to(global_position)
+			if nearest == 0 or d < nearest:
+				nearest = d
 				to_fire = a
 		if to_fire != null:
 			to_fire.fire(to_fire.global_position.direction_to(target) * fire_speed)
@@ -68,9 +69,13 @@ func _unhandled_input(event):
 		$Planet.generate_planet(1)
 		$CollisionShape2D.shape.radius = $Planet.radius * 2
 
-func init():
+func reset():
 	state = State.START
 	set_position_and_velocity(Vector2.ZERO, Vector2.ZERO)
+
+func set_home(home):
+	parent = home
+	$Camera2D.target = home
 
 func start():
 	state = State.ORBITING
@@ -78,8 +83,10 @@ func start():
 func travel(t):
 	if t:
 		state = State.TRAVELING
+		$Camera2D.loose = false
 	else:
 		state = State.FREE
+		$Camera2D.loose = true
 	asteroids = []
 	update_asteroid_label()
 
@@ -101,14 +108,8 @@ func set_position_and_velocity(pos, vel):
 func _process(delta):
 	if state == State.MENU:
 		position += Vector2.DOWN * 50 * delta
-	elif state == State.START or state == State.ORBITING:
-		if parent != null:
-			$Camera2D.global_position = parent.global_position
-	elif $Camera2D.position != Vector2.ZERO:
-		$Camera2D.position = $Camera2D.position.linear_interpolate(Vector2.ZERO, 1 * delta)
-		if $Camera2D.position.length_squared() < 1:
-			$Camera2D.position = Vector2.ZERO
-			set_process(false)
+	else:
+		set_process(false)
 
 func _physics_process(delta):
 	if state == State.START or state == State.ORBITING:
@@ -139,6 +140,8 @@ func _integrate_forces(_state):
 	else:
 		if state == State.ORBITING:
 			state = State.FREE
+			$Camera2D.target = self
+			$Camera2D.loose = true
 			set_deferred("mode", RigidBody2D.MODE_CHARACTER)
 			call_deferred("emit_signal", "left_home")
 			return

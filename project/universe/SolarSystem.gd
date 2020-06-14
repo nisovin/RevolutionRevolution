@@ -8,6 +8,7 @@ const Asteroid = preload("res://asteroids/Asteroid.tscn")
 
 var state = State.START
 var bodies = []
+var home_planet
 var radius = 0
 var belt = 0
 
@@ -49,12 +50,12 @@ func _process(delta):
 		ind.visible = b.indvis and dist > min_dim
 		
 func _physics_process(delta):
-	
-	if G.player.position.length_squared() > radius * radius:
-		if state == State.NORMAL:
-			goto_new_system()
+	if state == State.NORMAL and G.player.position.length_squared() > radius * radius:
+		print("deciding to travel ", radius, " < ", G.player.position.length())
+		goto_new_system()
 		
 func goto_new_system():
+	print("Traveling!")
 	state = State.TRAVELING
 	bodies = []
 	G.player.travel(true)
@@ -62,6 +63,7 @@ func goto_new_system():
 	var start = OS.get_ticks_msec()
 	
 	var player_dir = G.player.position.normalized()
+	print("dir ", player_dir)
 	$Background.goto_warp(player_dir)
 	$Tween.interpolate_property($Planets, "modulate", Color.white, Color.transparent, 0.5)
 	$Tween.interpolate_property($Asteroids, "modulate", Color.white, Color.transparent, 0.5)
@@ -78,18 +80,25 @@ func goto_new_system():
 	
 	radius = 0
 	belt = 0
+	print("generating")
 	yield(generate(), "completed")
+	print("done gen ", radius)
 	
 	G.player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * G.player.max_speed)
 	
 	var wait = 10000 - (OS.get_ticks_msec() - start)
-	if wait > 0:
+	if wait > 1000:
+		print("waiting ", wait)
 		yield(get_tree().create_timer(wait / 1000), "timeout")
+	else:
+		print("SKIP WAIT???")
+		yield(get_tree().create_timer(1), "timeout")
 	$Background.goto_normal()
 	$Tween.interpolate_property($Planets, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.interpolate_property($Asteroids, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.interpolate_property($Indicators/I, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.start()
+	print("fade")
 	
 	G.player.travel(false)
 	state = State.NORMAL
@@ -130,7 +139,7 @@ func generate(first = false):
 			planet.radius = 30
 			planet.base_color = Color.green
 			planet.generate_planet(i + 1)
-			G.player.parent = planet
+			home_planet = planet
 		else:
 			planet.generate(i + 1)
 		$Planets.add_child(planet)
@@ -147,7 +156,7 @@ func generate(first = false):
 		belt = radius
 		
 	var phi = ((Vector2.RIGHT * belt) + (Vector2.DOWN * 50)).angle()
-	var count = ceil(2 * PI / phi)
+	var count = ceil(2 * PI / phi) * 2
 	var theta = 0
 	for i in count:
 		theta += G.rng.randf_range(phi / 2, phi)
@@ -180,5 +189,5 @@ func generate(first = false):
 	$Indicators/I.add_child(ind)
 	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first})
 	
-	yield(get_tree(), "idle_frame")
-	state = State.NORMAL
+	if state == State.START:
+		state = State.NORMAL

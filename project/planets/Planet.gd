@@ -41,7 +41,7 @@ func speak(text, duration, target):
 
 func generate(index):
 	if index == 0:
-		radius = G.rng.randi_range(80, 150)
+		radius = G.rng.randi_range(150, 300)
 		base_color = Color.from_hsv(G.rng.randf_range(0.05, 0.17), 1.0, G.rng.randf_range(0.8, 1.0))
 	else:
 		radius = G.rng.randi_range(15, 30 + index * 5)

@@ -1,6 +1,6 @@
 extends RigidBody2D
 
-enum State { ORBITING, CAPTURED, FIRE, PROJECTILE, DEAD }
+enum State { ORBITING, CAPTURING, CAPTURED, FIRE, PROJECTILE, DEAD }
 
 var state = State.ORBITING
 var size = 5
@@ -27,12 +27,16 @@ func _integrate_forces(_state):
 		applied_force = dir * speed * (d / 5)
 	elif state == State.FIRE:
 		applied_force = fire_vel
-		_state.linear_velocity = fire_vel * 3
+		_state.linear_velocity = fire_vel * 5
 		state = State.PROJECTILE
 		
 func _physics_process(delta):
 	if state == State.CAPTURED:
 		rot += 2 * PI * delta / 5
+
+func clear_layers():
+	collision_layer = 0
+	collision_mask = 0
 
 func capture(t):
 	if state != State.ORBITING: return false
@@ -41,8 +45,7 @@ func capture(t):
 	dist = captor.position.distance_to(position) * 0.7
 	if dist < size * 3:
 		dist = size * 3
-	set_deferred("collision_layer", 0)
-	set_deferred("collision_mask", 0)
+	call_deferred("clear_layers")
 	$Dialog.text = G.rand_dialog("asteroid")
 	$Tween.interpolate_property($Dialog, "modulate", Color.transparent, Color.white, 0.3)
 	$Tween.interpolate_property($Dialog, "modulate", Color.white, Color.transparent, 0.3, Tween.TRANS_LINEAR, Tween.EASE_IN, 1.5)

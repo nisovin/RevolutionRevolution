@@ -2,6 +2,8 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
+const skip_start = true
+
 func _ready():
 	$Background.fast = true
 	yield($Background.generate(), "completed")
@@ -15,13 +17,14 @@ func start():
 	$Overlay/Button.queue_free()
 	$Background.queue_free()
 	
-	G.player.init()
+	G.player.reset()
 	yield(get_tree().create_timer(0.2), "timeout")
 	
 	var system = SolarSystem.instance()
 	add_child(system)
 	yield(get_tree().create_timer(0.2), "timeout")
 	yield(system.generate(true), "completed")
+	G.player.set_home(system.home_planet)
 	
 	$Tween.interpolate_property($Overlay/ColorRect, "color", Color.black, Color(0, 0, 0, 0), 1.0)
 	$Tween.start()
@@ -34,6 +37,10 @@ func start():
 	player.connect("left_home", self, "_on_left_home")
 	player.connect("captured_asteroid", self, "_on_captured")
 	
+	if skip_start:
+		player.start()
+		return
+		
 	yield(get_tree().create_timer(2), "timeout")
 	parent.speak(G.rand_dialog("open_greeting"), 3, player.position)
 	yield(get_tree().create_timer(3.5), "timeout")
