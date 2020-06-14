@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://background/Background.tscn" type="PackedScene" id=1]
 [ext_resource path="res://universe/SolarSystem.gd" type="Script" id=2]
-[ext_resource path="res://sounds/tranquility.ogg" type="AudioStream" id=4]
 
 [node name="SolarSystem" type="Node2D"]
 script = ExtResource( 2 )
@@ -18,8 +17,3 @@ script = ExtResource( 2 )
 [node name="I" type="Node2D" parent="Indicators"]
 
 [node name="Tween" type="Tween" parent="."]
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 4 )
-volume_db = -10.097
-autoplay = true

@@ -6,6 +6,7 @@ const far_size = 1000
 const mid_size = 1500
 const near_size = 1000
 
+var fast = false
 var state = State.NORMAL
 var warp_dir = Vector2.ZERO
 
@@ -186,7 +187,12 @@ func generate():
 	tex.create_from_image(img, Texture.FLAG_REPEAT)
 	near_stars.texture = tex
 	yield(get_tree(), "idle_frame")
-		
+	
+	if fast:
+		$ParallaxBackground/FarGas.queue_free()
+		$ParallaxBackground/MidGas.queue_free()
+		return
+	
 	# gasses
 	tex = ImageTexture.new()
 	tex.create(far_size / 2, far_size / 2, Image.FORMAT_RGB8, Texture.FLAG_REPEAT)

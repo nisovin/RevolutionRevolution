@@ -4,9 +4,9 @@ signal left_home
 signal reached_belt
 signal captured_asteroid
 
-enum State { START, ORBITING, FREE, TRAVELING }
+enum State { MENU, START, ORBITING, FREE, TRAVELING }
 
-var state = State.START
+var state = State.MENU
 
 var acceleration = 400
 var max_speed = 500
@@ -68,6 +68,10 @@ func _unhandled_input(event):
 		$Planet.generate_planet(1)
 		$CollisionShape2D.shape.radius = $Planet.radius * 2
 
+func init():
+	state = State.START
+	set_position_and_velocity(Vector2.ZERO, Vector2.ZERO)
+
 func start():
 	state = State.ORBITING
 
@@ -95,7 +99,9 @@ func set_position_and_velocity(pos, vel):
 	sleeping = false
 
 func _process(delta):
-	if state == State.START or state == State.ORBITING:
+	if state == State.MENU:
+		position += Vector2.DOWN * 50 * delta
+	elif state == State.START or state == State.ORBITING:
 		if parent != null:
 			$Camera2D.global_position = parent.global_position
 	elif $Camera2D.position != Vector2.ZERO:
@@ -147,3 +153,12 @@ func _integrate_forces(_state):
 	else:
 		$CanvasLayer/SpeedLabel.text = "Speed: " + str(ceil(min(max_speed * 10, _state.linear_velocity.length()))) + " xel/s"
 		$CanvasLayer/PositionLabel.text = "Position: " + str(floor(position.x / 10)) + ", " + str(floor(position.y / 10))
+
+func _on_Player_input_event(viewport, event, shape_idx):
+	if state == State.MENU and event.is_action_pressed("move"):
+		var h = $Planet.base_color.h
+		h += G.rng.randf_range(0.03, 0.07)
+		if h > 1: h -= 1
+		if h < 0.3: h += 0.3
+		$Planet.base_color.h = h
+		$Planet.generate_planet(1)

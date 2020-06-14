@@ -20,7 +20,7 @@ var dialogs = {
 		"Why do we have to\nrevolve all the time?",
 		"I'm tired of revolving.\nI'm ready for something new.",
 		"I don't wanna keep\nrevolving anymore.",
-		"Revolving is\nso last year.",
+		"Revolving is\nso last millenium.",
 		"Revolving is getting\nso boring."
 	],
 	"open_chastise": [
@@ -36,12 +36,14 @@ var dialogs = {
 		"I'm done revolving!",
 		"I'm done with it!",
 		"That's what you think!",
-		"Not anymore!"
+		"Not anymore!",
+		"I'm going rogue!"
 	],
 	"open_depart": [
 		"Viva la\nrevolution\nrevolution!",
 		"It's a\nrevolution\nrevolution!",
-		"Now for the\nrevolution\nrevolution!"
+		"Now for the\nrevolution\nrevolution!",
+		"Let's start the\nrevolution\nrevolution!"
 	],
 	
 	"call_out": [

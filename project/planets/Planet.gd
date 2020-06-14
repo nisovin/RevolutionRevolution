@@ -103,7 +103,7 @@ func generate_planet(index):
 	
 	var noise = OpenSimplexNoise.new()
 	noise.seed = G.rng.randi()
-	noise.lacunarity = G.rng.randf_range(2.0, 4.0)
+	noise.lacunarity = G.rng.randf_range(2.0, 5.0)
 	#noise.octaves = G.rng.randi_range(2, 5)
 	noise.period = G.rng.randf_range(20, 100)
 	noise.persistence = G.rng.randf_range(0.25, 0.75)
@@ -125,7 +125,7 @@ func generate_planet(index):
 	var mat = $Sprite.material as ShaderMaterial
 	mat.set_shader_param("color", over_color)
 	mat.set_shader_param("speed", G.rng.randf_range(0.3, 1.0) * 1 if G.rng.randf() < 0.5 else -1)
-	mat.set_shader_param("density", G.rng.randf_range(0.3, 0.6) - 0.1 if is_player else 0)
+	mat.set_shader_param("density", G.rng.randf_range(0.5, 0.8))
 	mat.set_shader_param("noise_texture", noise_tex)
 
 	if G.rng.randf() < 0.2:

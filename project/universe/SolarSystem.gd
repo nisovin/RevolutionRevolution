@@ -1,12 +1,12 @@
 extends Node2D
 
-enum State { NORMAL, TRAVELING }
+enum State { START, NORMAL, TRAVELING }
 
 const Planet = preload("res://planets/Planet.tscn")
 const PlanetIndicator = preload("res://planets/PlanetIndicator.tscn")
 const Asteroid = preload("res://asteroids/Asteroid.tscn")
 
-var state = State.NORMAL
+var state = State.START
 var bodies = []
 var radius = 0
 var belt = 0
@@ -179,3 +179,6 @@ func generate(first = false):
 	ind.type = "exit"
 	$Indicators/I.add_child(ind)
 	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first})
+	
+	yield(get_tree(), "idle_frame")
+	state = State.NORMAL
