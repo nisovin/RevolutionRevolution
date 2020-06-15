@@ -21,7 +21,7 @@ var dialogs = {
 		"Why do we have to\nrevolve all the time?",
 		"I'm tired of revolving.\nI'm ready for something new.",
 		"I don't wanna keep\nrevolving anymore.",
-		"Revolving is\nso last millenium.",
+		"Revolving is\nso last millennium.",
 		"Revolving is getting\nso boring."
 	],
 	"open_chastise": [

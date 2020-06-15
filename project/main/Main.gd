@@ -2,7 +2,7 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = false
+const skip_start = true
 
 func _ready():
 	$Background.fast = true

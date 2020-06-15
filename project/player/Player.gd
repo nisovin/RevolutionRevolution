@@ -9,7 +9,7 @@ enum State { MENU, START, ORBITING, FREE, TRAVELING }
 
 var state = State.MENU
 
-var acceleration = 400
+var acceleration = 600
 var max_speed = 500
 var fire_speed = 150
 
