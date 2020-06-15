@@ -2,13 +2,17 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = true
+const skip_start = false
 
 func _ready():
 	$Background.fast = true
 	yield($Background.generate(), "completed")
 	$Tween.interpolate_property($Overlay/ColorRect, "color", Color.black, Color(0, 0, 0, 0), 1.0)
 	$Tween.start()
+
+func _input(event):
+	if event is InputEventKey and event.pressed and event.scancode == KEY_F11:
+		OS.window_fullscreen = not OS.window_fullscreen
 
 func start():
 	G.player_name = $Overlay/VBoxContainer/PlayerName.text
@@ -51,6 +55,8 @@ func start():
 			body.indvis = true
 		return
 		
+	show_hint("Press F11 to toggle fullscreen", 3)
+		
 	yield(get_tree().create_timer(2), "timeout")
 	parent.speak(G.rand_dialog("open_greeting"), 3, player.position)
 	yield(get_tree().create_timer(3.5), "timeout")
@@ -79,6 +85,7 @@ func _on_left_home():
 	for body in $SolarSystem.bodies:
 		if body.type == "belt":
 			body.indvis = true
+	G.player.show_health_bar()
 
 func _on_enter_belt():
 	yield(get_tree().create_timer(1), "timeout")
@@ -87,9 +94,7 @@ func _on_enter_belt():
 func _on_captured():
 	yield(get_tree().create_timer(2), "timeout")
 	show_hint("Go try to recruit a planet", 3)
-	for body in $SolarSystem.bodies:
-		if body.type == "planet":
-			body.indvis = true
+	$SolarSystem.bodies[5].indvis = true
 	
 func _on_rejection():
 	yield(get_tree().create_timer(3), "timeout")
@@ -99,6 +104,7 @@ func _on_planet_leave():
 	print("main planet leave")
 	yield(get_tree().create_timer(3), "timeout")
 	show_hint(G.rand_dialog("sun_question"), 3, Color.yellow)
+	Audio.play_planet_voice(1)
 	yield(get_tree().create_timer(4), "timeout")
 	G.player.speak(G.rand_dialog("sun_defense"), 2, Vector2.ZERO)
 	yield(get_tree().create_timer(4), "timeout")
@@ -108,19 +114,23 @@ func _on_planet_leave():
 			body.indvis = true
 	
 func _on_approached_sun():
-	var sun = $SolarSystem.bodies[0].body
-	
 	show_hint(G.rand_dialog("sun_ask_stop"), 3, Color.yellow)
+	Audio.play_planet_voice(1)
 	yield(get_tree().create_timer(3.5), "timeout")
 	G.player.speak(G.rand_dialog("sun_revolt"), 3, Vector2.ZERO)
 	yield(get_tree().create_timer(3.5), "timeout")
 	show_hint(G.rand_dialog("sun_ask_leave"), 3, Color.yellow)
+	Audio.play_planet_voice(1)
 	yield(get_tree().create_timer(3.5), "timeout")
 	G.player.speak(G.rand_dialog("sun_leave"), 3, Vector2.ZERO)
 	yield(get_tree().create_timer(6), "timeout")
 	show_hint("Leave the solar system", 5)
 	for body in $SolarSystem.bodies:
 		if body.type == "exit":
+			body.indvis = true
+	yield(get_tree().create_timer(6), "timeout")
+	for body in $SolarSystem.bodies:
+		if body.type == "planet":
 			body.indvis = true
 
 func _on_MousePointer_gui_input(event):

@@ -82,6 +82,7 @@ func goto_new_system():
 	
 	var player_dir = G.player.position.normalized()
 	print("dir ", player_dir)
+	Audio.play_wormhole()
 	$Background.goto_warp(player_dir)
 	$Tween.interpolate_property($Planets, "modulate", Color.white, Color.transparent, 0.5)
 	$Tween.interpolate_property($Asteroids, "modulate", Color.white, Color.transparent, 0.5)
@@ -107,6 +108,8 @@ func goto_new_system():
 		yield(get_tree().create_timer(wait / 1000), "timeout")
 	else:
 		yield(get_tree().create_timer(1), "timeout")
+		
+	Audio.stop_wormhole()
 	$Background.goto_normal()
 	$Tween.interpolate_property($Planets, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.interpolate_property($Asteroids, "modulate", Color.transparent, Color.white, 0.5)
@@ -170,6 +173,7 @@ func generate(first = false):
 
 	if belt == 0:
 		belt = radius
+		radius += G.rng.randi_range(600, 1000)
 		
 	var phi = ((Vector2.RIGHT * belt) + (Vector2.DOWN * 50)).angle()
 	var count = ceil(2 * PI / phi) * 2
@@ -200,7 +204,7 @@ func generate(first = false):
 		$Asteroids.add_child(ast)
 	yield(get_tree(), "idle_frame")
 
-	radius += 1000
+	radius += 1500
 	ind = PlanetIndicator.instance()
 	ind.color = Color.magenta
 	ind.type = "exit"

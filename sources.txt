@@ -13,3 +13,11 @@ License: http://creativecommons.org/licenses/by/4.0/
 Sounds (c) by Michel Baradari apollo-music.de
 Licensed under CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
 Hosted on opengameart.org
+
+Kenney SFX
+
+Interface SFX
+
+Background Loop
+CCO
+https://freesound.org/people/Leszek_Szary/sounds/368730/

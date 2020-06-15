@@ -5,11 +5,11 @@ signal reached_belt
 signal captured_asteroid
 signal been_rejected
 
-enum State { MENU, START, ORBITING, FREE, TRAVELING }
+enum State { MENU, START, ORBITING, FREE, TRAVELING, GAME_OVER }
 
 var state = State.MENU
 
-var acceleration = 600
+var acceleration = 300
 var max_speed = 500
 var fire_speed = 150
 
@@ -20,6 +20,12 @@ var req_vel = null
 var parent
 var angle = 0
 var asteroids = []
+
+var health = 0.0
+var recovering = 0
+var recover_cooldown = 0
+var invulnerable = true
+
 var have_reached_belt = false
 var have_captured = false
 var have_been_rejected = false
@@ -34,6 +40,15 @@ func _ready():
 	
 func speak(text, duration, target):
 	$Planet.speak(text, duration, target)
+
+func take_damage(amount, recoverable = false):
+	if invulnerable: return
+	health -= amount
+	recover_cooldown = 5
+	if recovering > 0:
+		recovering *= 0.75
+	if recoverable:
+		recovering += amount
 
 func _unhandled_input(event):
 	if state != State.FREE: return
@@ -70,9 +85,11 @@ func _unhandled_input(event):
 			asteroids.erase(to_fire)
 			update_asteroid_label()
 	elif event.is_action_pressed("ui_page_up"):
-		$Planet.radius += 1
+		size += 1
+		$Planet.radius = size
 		$Planet.generate_planet(1)
-		$CollisionShape2D.shape.radius = $Planet.radius * 2
+		$CollisionShape2D.shape.radius = size * 2
+		mass = size
 
 func reset():
 	state = State.START
@@ -85,10 +102,24 @@ func set_home(home):
 func start():
 	state = State.ORBITING
 
+func show_health_bar():
+	var bar = $CanvasLayer/HealthBar
+	bar.modulate = Color.transparent
+	bar.visible = true
+	$Tween.interpolate_property(bar, "modulate", Color.transparent, Color.white, 1.5)
+	$Tween.interpolate_property(self, "health", 0.0, 100.0, 2.5, Tween.TRANS_QUAD, Tween.EASE_IN, 0.5)
+	$Tween.start()
+	yield(get_tree().create_timer(2.5), "timeout")
+	invulnerable = false
+
 func travel(t):
 	if t:
 		state = State.TRAVELING
 		$Camera2D.loose = false
+		var h = health + 20
+		if h > 100: h = 100
+		$Tween.interpolate_property(self, "health", health, h, 5, Tween.TRANS_LINEAR, Tween.EASE_IN, 1)
+		$Tween.start()
 	else:
 		state = State.FREE
 		$Camera2D.loose = true
@@ -114,7 +145,20 @@ func _process(delta):
 	if state == State.MENU:
 		position += Vector2.DOWN * 50 * delta
 	else:
-		set_process(false)
+		if recover_cooldown > 0:
+			recover_cooldown -= delta
+		if recovering > 0 and recover_cooldown <= 0:
+			var amt = 3 * delta
+			if amt > recovering:
+				amt = recovering
+				recovering = 0
+			else:
+				recovering -= amt
+			health += amt
+			if health > 100:
+				health = 100
+		$CanvasLayer/HealthBar.value = health
+		
 
 func _physics_process(delta):
 	if state == State.START or state == State.ORBITING:
@@ -151,7 +195,7 @@ func _integrate_forces(_state):
 			call_deferred("emit_signal", "left_home")
 			return
 		var vel_dir = _state.linear_velocity.normalized()
-		applied_force = v * acceleration * (2 - ((v.dot(vel_dir) + 1) / 2))
+		applied_force = v * acceleration * mass * (2 - ((v.dot(vel_dir) + 1) / 2))
 	
 	_state.linear_velocity = _state.linear_velocity.clamped(max_speed)
 	
@@ -171,3 +215,20 @@ func cycle_color():
 		$Planet.base_color.h = h
 		$Planet.data = null
 		$Planet.generate_planet(1)
+
+
+func _on_Player_body_entered(body):
+	if body.is_in_group("planets"):
+		var base_dam = 0
+		var psize = body.get_parent().radius
+		if psize > size * 3:
+			base_dam = 2.0
+		elif psize > size * 2:
+			base_dam = 1.25
+		else:
+			base_dam = 1.0
+		if base_dam > 0:
+			take_damage(linear_velocity.length() / 100 * base_dam, true)
+	elif body.is_in_group("asteroids"):
+		if body.size > size * 2:
+			take_damage(3, true)

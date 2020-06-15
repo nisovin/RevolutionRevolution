@@ -74,9 +74,7 @@ func goto_normal():
 	state = State.NORMAL
 		
 func generate():
-	
-	var start = OS.get_ticks_msec()
-	
+		
 	var img
 	var tex
 	var mat

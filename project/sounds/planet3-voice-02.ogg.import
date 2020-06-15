@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/planet3-voice-02.ogg-c2fd92d0fef2822975a125d278c072d8.oggstr"
+
+[deps]
+
+source_file="res://sounds/planet3-voice-02.ogg"
+dest_files=[ "res://.import/planet3-voice-02.ogg-c2fd92d0fef2822975a125d278c072d8.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

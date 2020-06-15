@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/wormhole.ogg-e1383f5fd34cd81e4cd78b35490f92f6.oggstr"
+
+[deps]
+
+source_file="res://sounds/wormhole.ogg"
+dest_files=[ "res://.import/wormhole.ogg-e1383f5fd34cd81e4cd78b35490f92f6.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

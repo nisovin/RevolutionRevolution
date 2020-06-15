@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/asteroid_voice-05.ogg-c980c6c3f34ee077982ce68a9e8a807e.oggstr"
+
+[deps]
+
+source_file="res://sounds/asteroid_voice-05.ogg"
+dest_files=[ "res://.import/asteroid_voice-05.ogg-c980c6c3f34ee077982ce68a9e8a807e.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

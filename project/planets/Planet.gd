@@ -14,6 +14,7 @@ var health = 20
 var radius = 0
 var diameter = 0
 var base_color = Color.white
+var voice = 1
 var is_player = false
 var data = null
 
@@ -47,6 +48,10 @@ func speak(text, duration, target):
 	$Tween.interpolate_property($Dialog, "modulate", Color.transparent, Color.white, 0.5)
 	$Tween.interpolate_property($Dialog, "modulate", Color.white, Color.transparent, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN, duration + 0.5)
 	$Tween.start()
+	if is_player:
+		Audio.play_player_voice()
+	else:
+		Audio.play_planet_voice(voice)
 
 func take_damage(amount):
 	if state != State.REVOLVING: return
@@ -104,6 +109,10 @@ func generate_planet(index):
 		
 	diameter = radius * 2 + 1
 	if not is_player:
+		if index == 0:
+			voice = 1
+		else:
+			voice = G.rng.randi_range(2, 9)
 		if index > 0:
 			$StaticBody2D/CollisionShape2D.shape.radius = radius * 2
 		

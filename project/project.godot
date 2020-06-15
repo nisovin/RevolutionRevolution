@@ -24,6 +24,12 @@ config/icon="res://icon.png"
 G="*res://main/G.gd"
 Audio="*res://main/Audio.gd"
 
+[debug]
+
+gdscript/warnings/unused_argument=false
+gdscript/warnings/unused_signal=false
+gdscript/warnings/integer_division=false
+
 [display]
 
 window/size/width=960

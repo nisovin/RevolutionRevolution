@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/planet4-voice-02.ogg-11f01c6aa515b7382a1798844da6c8ce.oggstr"
+
+[deps]
+
+source_file="res://sounds/planet4-voice-02.ogg"
+dest_files=[ "res://.import/planet4-voice-02.ogg-11f01c6aa515b7382a1798844da6c8ce.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

@@ -20,14 +20,14 @@ func _integrate_forces(_state):
 		var expected = position.normalized() * dist
 		var target = expected + (position.normalized().rotated(PI / 2 * revolve_dir) * 200)
 		var dir = position.direction_to(target)
-		applied_force = dir * speed
+		applied_force = dir * speed * mass
 	elif state == State.CAPTURED:
 		var target = captor.position + (Vector2.RIGHT.rotated(rot) * dist)
 		var dir = position.direction_to(target)
 		var d = position.distance_to(target)
-		applied_force = dir * speed * (d / 5)
+		applied_force = dir * speed * (d / 5) * mass
 	elif state == State.FIRE:
-		applied_force = fire_vel
+		applied_force = fire_vel * mass
 		_state.linear_velocity = fire_vel * 5
 		state = State.PROJECTILE
 		
@@ -43,9 +43,8 @@ func capture(t):
 	if state != State.ORBITING: return false
 	state = State.CAPTURED
 	captor = t
-	dist = captor.position.distance_to(position) * 0.7
-	if dist < size * 3:
-		dist = size * 3
+	dist = G.rng.randf_range(size * 3, 175)
+	rot = G.rng.randf_range(0, 2 * PI)
 	call_deferred("clear_layers")
 	$Dialog.text = G.rand_dialog("asteroid")
 	$Tween.interpolate_property($Dialog, "modulate", Color.transparent, Color.white, 0.3)
@@ -65,6 +64,7 @@ func fire(vel):
 func generate():
 	dist = position.length()
 	size = G.rng.randi_range(2, 6)
+	mass = size * 0.5
 	if G.rng.randf() < 0.2:
 		size *= 2
 		if G.rng.randf() < 0.1:
