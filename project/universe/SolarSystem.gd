@@ -118,6 +118,13 @@ func goto_new_system():
 	
 	G.player.travel(false)
 	state = State.NORMAL
+	
+	yield(get_tree().create_timer(5), "timeout")
+	$Indicators/SystemName.text = G.rand_system_name()
+	$Tween.interpolate_property($Indicators/SystemName, "modulate", Color.transparent, Color.white, 1)
+	$Tween.interpolate_property($Indicators/SystemName, "modulate", Color.white, Color.transparent, 1, Tween.TRANS_LINEAR, Tween.EASE_IN, 4)
+	$Tween.start()
+	
 		
 func generate(first = false):
 	yield($Background.generate(), "completed")
@@ -213,3 +220,4 @@ func generate(first = false):
 	
 	if state == State.START:
 		state = State.NORMAL
+		

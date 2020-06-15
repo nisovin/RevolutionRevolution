@@ -228,7 +228,11 @@ func _on_Player_body_entered(body):
 		else:
 			base_dam = 1.0
 		if base_dam > 0:
-			take_damage(linear_velocity.length() / 100 * base_dam, true)
+			var vel = linear_velocity.length()
+			if vel > 150:
+				print(vel)
+				take_damage(vel / 100 * base_dam, true)
+				Audio.play("thwack")
 	elif body.is_in_group("asteroids"):
 		if body.size > size * 2:
 			take_damage(3, true)

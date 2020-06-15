@@ -6,7 +6,7 @@
 [ext_resource path="res://gui/Kenney Mini.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://sounds/tranquility.ogg" type="AudioStream" id=5]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
 border_width_left = 4
 border_width_top = 4
@@ -17,21 +17,21 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=2]
 size = 32
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=3]
 size = 20
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=4]
 size = 20
 outline_size = 2
 outline_color = Color( 0.172549, 0.172549, 0.172549, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="Environment" id=2]
+[sub_resource type="Environment" id=5]
 background_mode = 4
 glow_enabled = true
 glow_strength = 1.25
@@ -77,18 +77,20 @@ __meta__ = {
 [node name="PlayerName" type="LineEdit" parent="Overlay/VBoxContainer"]
 margin_right = 200.0
 margin_bottom = 48.0
-custom_styles/normal = SubResource( 3 )
-custom_fonts/font = SubResource( 4 )
+custom_styles/normal = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Moon"
 align = 1
 max_length = 10
+caret_blink = true
+caret_position = 4
 
 [node name="PlayButton" type="Button" parent="Overlay/VBoxContainer"]
 margin_top = 52.0
 margin_right = 200.0
 margin_bottom = 83.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 3 )
 text = "Play"
 flat = true
 __meta__ = {
@@ -100,19 +102,31 @@ margin_top = 87.0
 margin_right = 200.0
 margin_bottom = 118.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 3 )
 text = "Settings"
 flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="QuitButton" type="Button" parent="Overlay/VBoxContainer"]
+[node name="CreditsButton" type="Button" parent="Overlay/VBoxContainer"]
 margin_top = 122.0
 margin_right = 200.0
 margin_bottom = 153.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 3 )
+text = "Credits"
+flat = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="QuitButton" type="Button" parent="Overlay/VBoxContainer"]
+margin_top = 157.0
+margin_right = 200.0
+margin_bottom = 188.0
+mouse_default_cursor_shape = 2
+custom_fonts/font = SubResource( 3 )
 text = "Quit"
 flat = true
 __meta__ = {
@@ -120,6 +134,7 @@ __meta__ = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="Overlay"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -134,7 +149,7 @@ __meta__ = {
 anchor_right = 1.0
 margin_top = 20.0
 margin_bottom = 40.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 4 )
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -148,8 +163,10 @@ volume_db = -10.0
 autoplay = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 2 )
+environment = SubResource( 5 )
 [connection signal="gui_input" from="Overlay/MousePointer" to="." method="_on_MousePointer_gui_input"]
+[connection signal="text_entered" from="Overlay/VBoxContainer/PlayerName" to="." method="_on_PlayerName_text_entered"]
 [connection signal="pressed" from="Overlay/VBoxContainer/PlayButton" to="." method="_on_PlayButton_pressed"]
 [connection signal="pressed" from="Overlay/VBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
+[connection signal="pressed" from="Overlay/VBoxContainer/CreditsButton" to="." method="_on_CreditsButton_pressed"]
 [connection signal="pressed" from="Overlay/VBoxContainer/QuitButton" to="." method="_on_QuitButton_pressed"]

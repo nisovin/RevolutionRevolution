@@ -23,7 +23,10 @@ func _process(delta):
 		global_position = lerp(global_position, moving_target, p * 0.1)
 		#update()
 	else:
-		global_position = target.global_position
+		#if global_position.distance_squared_to(target.global_position) < 25:
+			global_position = target.global_position
+		#else:
+		#	global_position = lerp(global_position, target.global_position, 0.1)
 
 #func _draw():
 #	if loose:

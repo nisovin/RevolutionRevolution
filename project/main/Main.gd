@@ -9,6 +9,7 @@ func _ready():
 	yield($Background.generate(), "completed")
 	$Tween.interpolate_property($Overlay/ColorRect, "color", Color.black, Color(0, 0, 0, 0), 1.0)
 	$Tween.start()
+	$Overlay/VBoxContainer/PlayerName.grab_focus()
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.scancode == KEY_F11:
@@ -104,7 +105,7 @@ func _on_planet_leave():
 	print("main planet leave")
 	yield(get_tree().create_timer(3), "timeout")
 	show_hint(G.rand_dialog("sun_question"), 3, Color.yellow)
-	Audio.play_planet_voice(1)
+	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(4), "timeout")
 	G.player.speak(G.rand_dialog("sun_defense"), 2, Vector2.ZERO)
 	yield(get_tree().create_timer(4), "timeout")
@@ -115,12 +116,12 @@ func _on_planet_leave():
 	
 func _on_approached_sun():
 	show_hint(G.rand_dialog("sun_ask_stop"), 3, Color.yellow)
-	Audio.play_planet_voice(1)
+	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(3.5), "timeout")
 	G.player.speak(G.rand_dialog("sun_revolt"), 3, Vector2.ZERO)
 	yield(get_tree().create_timer(3.5), "timeout")
 	show_hint(G.rand_dialog("sun_ask_leave"), 3, Color.yellow)
-	Audio.play_planet_voice(1)
+	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(3.5), "timeout")
 	G.player.speak(G.rand_dialog("sun_leave"), 3, Vector2.ZERO)
 	yield(get_tree().create_timer(6), "timeout")
@@ -137,12 +138,21 @@ func _on_MousePointer_gui_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		G.player.cycle_color()
 	
+func _on_PlayerName_text_entered(new_text):
+	start()
+	
 func _on_PlayButton_pressed():
 	start()
 
 func _on_SettingsButton_pressed():
 	pass
 
+func _on_CreditsButton_pressed():
+	pass
+
 func _on_QuitButton_pressed():
 	get_tree().quit()
+
+
+
 

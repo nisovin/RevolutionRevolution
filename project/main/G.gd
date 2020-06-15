@@ -127,11 +127,47 @@ var dialogs = {
 	]
 }
 
+var planet_prefixes = ["Mer", "Ven", "Mar", "Jup", "Sat", "Ur", "Nep", "Plut", "Ark", "Orb", "Dim", "Gal", "Jan", "Har", "Amat", "Tad", "Mez", "Hyp", "Arb", "Mad", "Yan", "Sis"]
+var planet_infixes = ["a", "e", "i", "o", "u", "ae", "io", "ecu", "au", "ea", "eu", "ia", "ai", "ei", "ou", "oo", "ue", "eo"]
+var planet_suffixes = ["ry", "nus", "ter", "turn", "nus", "tune", "to", "s", "th", "ch", "x", "ve", "ron", "rion", "kas", "tar", "dium", "leo", "sen", "gon", "trios", "tia", "nea", "tias", "far", "cho", "sh", "dra", "lay", "les", "los", "sama", "dono", "san", "chan", "kun"]
+
+var system_prefixes = ["Alpha", "Beta", "Gamma", "Epsilon", "Zeta", "Omega", "Prime"]
+var system_suffixes = ["A", "B", "C", "G", "J", "K", "Q", "V", "X", "Z"]
+
 func _ready():
 	rng.randomize()
 
 func rand_dialog(key):
 	return rand_array(dialogs[key]).replace("{player}", G.player_name)
+
+func rand_planet_name():
+	return rand_array(planet_prefixes) + rand_array(planet_infixes) + rand_array(planet_suffixes)
+
+func rand_system_name():
+	var n = rand_array(planet_prefixes)
+	var x = rng.randf()
+	if x < 0.4:
+		n += rand_array(planet_infixes)
+	elif x < 0.7:
+		n += rand_array(planet_suffixes)
+	else:
+		n += rand_array(planet_infixes) + rand_array(planet_suffixes)
+		
+	x = rng.randf()
+	if x < 0.6:
+		n = rand_array(system_prefixes) + " " + n
+	else:
+		n = rand_array(planet_prefixes) + rand_array(planet_infixes) + " " + n
+		
+	x = rng.randf()
+	if x < 0.3:
+		n += " " + rand_array(system_suffixes)
+	elif x < 0.7:
+		n += " " + str(rng.randi_range(5, 587))
+	else:
+		n += " " + rand_array(system_suffixes) + "-" + str(rng.randi_range(1, 99))
+		
+	return n
 
 func rand_array(array):
 	return array[G.rng.randi_range(0, array.size() - 1)]

@@ -18,10 +18,6 @@ var voice = 1
 var is_player = false
 var data = null
 
-var prefixes = ["Mer", "Ven", "Mar", "Jup", "Sat", "Ur", "Nep", "Plut", "Ark", "Orb", "Dim", "Gal", "Jan", "Har", "Amat", "Tad", "Mez", "Hyp", "Arb", "Mad", "Yan", "Sis"]
-var infixes = ["a", "e", "i", "o", "u", "ae", "io", "ecu", "au", "ea", "eu", "ia", "ai", "ei", "ou", "oo", "ue", "eo"]
-var suffixes = ["ry", "nus", "ter", "turn", "nus", "tune", "to", "s", "th", "ch", "x", "ve", "ron", "rion", "kas", "tar", "dium", "leo", "sen", "gon", "trios", "tia", "nea", "tias", "far", "cho", "sh", "dra", "lay", "les", "los", "sama", "dono", "san", "chan", "kun"]
-
 func _process(delta):
 	if state == State.REVOLVING and revolve_around != null:
 		var v = position - revolve_around.position
@@ -49,9 +45,9 @@ func speak(text, duration, target):
 	$Tween.interpolate_property($Dialog, "modulate", Color.white, Color.transparent, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN, duration + 0.5)
 	$Tween.start()
 	if is_player:
-		Audio.play_player_voice()
+		Audio.play("playervoice")
 	else:
-		Audio.play_planet_voice(voice)
+		Audio.play("planetvoice" + str(voice))
 
 func take_damage(amount):
 	if state != State.REVOLVING: return
@@ -170,7 +166,7 @@ func generate_planet(index):
 	else:
 		$Sprite.rotation = 0
 
-	$NameLabel.text = prefixes[G.rng.randi_range(0, prefixes.size() - 1)] + infixes[G.rng.randi_range(0, infixes.size() - 1)] + suffixes[G.rng.randi_range(0, suffixes.size() - 1)]
+	$NameLabel.text = G.rand_planet_name()
 	$NameLabel.set("custom_colors/font_color", base_color.lightened(0.6))
 	$NameLabel.set("custom_colors/font_outline_modulate", base_color.darkened(0.6))
 	$NameLabel.rect_position.y -= radius * 2 + 20

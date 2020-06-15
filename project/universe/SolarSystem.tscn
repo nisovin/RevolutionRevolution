@@ -1,7 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://background/Background.tscn" type="PackedScene" id=1]
 [ext_resource path="res://universe/SolarSystem.gd" type="Script" id=2]
+[ext_resource path="res://gui/Kenney Mini.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+outline_size = 5
+outline_color = Color( 0.12549, 0.12549, 0.12549, 1 )
+extra_spacing_char = 1
+font_data = ExtResource( 3 )
 
 [node name="SolarSystem" type="Node2D"]
 script = ExtResource( 2 )
@@ -15,5 +23,20 @@ script = ExtResource( 2 )
 [node name="Indicators" type="CanvasLayer" parent="."]
 
 [node name="I" type="Node2D" parent="Indicators"]
+
+[node name="SystemName" type="Label" parent="Indicators"]
+modulate = Color( 1, 1, 1, 0 )
+anchor_top = 0.25
+anchor_right = 1.0
+anchor_bottom = 0.25
+margin_top = -50.0
+margin_bottom = 50.0
+custom_fonts/font = SubResource( 1 )
+text = "The System Name"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Tween" type="Tween" parent="."]

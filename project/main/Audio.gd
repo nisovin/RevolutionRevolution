@@ -14,14 +14,17 @@ func _ready():
 	register("depart", preload("res://sounds/depart.ogg"))
 	register("launch", preload("res://sounds/flaunch.wav"))
 	register("break", preload("res://sounds/break.ogg"))
+
+	for i in 3:
+		register("thwack", load("res://sounds/thwack-0" + str(i+1) + ".ogg"))
 	
 	for i in 10:
-		register("playervoice" + str(i+1), load("res://sounds/player_voice-" + str(i+1).pad_zeros(2) + ".ogg"))
+		register("playervoice", load("res://sounds/player_voice-" + str(i+1).pad_zeros(2) + ".ogg"))
 	for i in 9:
-		register("asteroidvoice" + str(i+1), load("res://sounds/asteroid_voice-" + str(i+1).pad_zeros(2) + ".ogg"))
+		register("asteroidvoice", load("res://sounds/asteroid_voice-" + str(i+1).pad_zeros(2) + ".ogg"))
 	for i in 9:
 		for j in 3:
-			register("planetvoice" + str(i+1) + "_" + str(j+1), load("res://sounds/planet" + str(i+1) + "-voice-0" + str(j+1) + ".ogg"))
+			register("planetvoice" + str(i+1), load("res://sounds/planet" + str(i+1) + "-voice-0" + str(j+1) + ".ogg"))
 
 func init(channels = 10):
 	_sfx_node = Node.new()
@@ -40,13 +43,9 @@ func init_wormhole():
 	_wormhole_sound.play()
 
 func register(key, sound):
-	_sfx_sounds[key] = sound
-
-func play_player_voice():
-	play("playervoice" + str(G.rng.randi_range(1, 10)))
-	
-func play_planet_voice(p):
-	play("planetvoice" + str(p) + "_" + str(G.rng.randi_range(1, 3)))
+	if not key in _sfx_sounds:
+		_sfx_sounds[key] = []
+	_sfx_sounds[key].append(sound)
 
 func play_wormhole():
 	_wormhole_tween.stop_all()
@@ -67,7 +66,7 @@ func play(sound, volume = 1.0, force = false, bus = "SFX"):
 			a.volume_db = linear2db(volume)
 			a.bus = bus
 			if sound is String:
-				a.stream = _sfx_sounds[sound]
+				a.stream = G.rand_array(_sfx_sounds[sound])
 			elif sound is AudioStream:
 				a.stream = sound
 			a.play()
