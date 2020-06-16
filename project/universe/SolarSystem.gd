@@ -9,15 +9,19 @@ enum State { START, NORMAL, TRAVELING }
 const Planet = preload("res://planets/Planet.tscn")
 const PlanetIndicator = preload("res://planets/PlanetIndicator.tscn")
 const Asteroid = preload("res://asteroids/Asteroid.tscn")
+const SolarFlare = preload("res://universe/SolarFlare.tscn")
 
 var state = State.START
 var bodies = []
 var home_planet
 var radius = 0
 var belt = 0
+var first_system = false
 var have_entered_belt = false
 var have_planet_fled = false
 var have_approached_sun = false
+var prevent_leave_cooldown = 0
+var prevent_leave_speak_cooldown = 0
 
 func _process(delta):
 	var vp = get_viewport().get_size_override()
@@ -66,12 +70,27 @@ func _process(delta):
 		
 func _physics_process(delta):
 	if state == State.NORMAL and G.player.position.length_squared() > radius * radius:
-		goto_new_system()
+		if have_approached_sun:
+			goto_new_system()
+		else:
+			if prevent_leave_cooldown <= 0:
+				G.player.set_position_and_velocity(null, G.player.position.normalized() * -2500)
+				prevent_leave_cooldown = 2
+			else:
+				prevent_leave_cooldown -= delta
+			if prevent_leave_speak_cooldown <= 0:
+				prevent_leave_speak_cooldown = 8
+				G.player.speak("The sun won't let me\nleave the system.", 3, Vector2.ZERO)
+			else:
+				prevent_leave_speak_cooldown -= delta
 
 func _on_planet_leave():
 	if not have_planet_fled:
 		have_planet_fled = true
 		call_deferred("emit_signal", "planet_leaving")
+
+func can_pause():
+	return state == State.NORMAL
 
 func goto_new_system():
 	state = State.TRAVELING
@@ -81,7 +100,6 @@ func goto_new_system():
 	var start = OS.get_ticks_msec()
 	
 	var player_dir = G.player.position.normalized()
-	print("dir ", player_dir)
 	Audio.play_wormhole()
 	$Background.goto_warp(player_dir)
 	$Tween.interpolate_property($Planets, "modulate", Color.white, Color.transparent, 0.5)
@@ -96,6 +114,7 @@ func goto_new_system():
 	for child in $Indicators/I.get_children():
 		child.queue_free()
 	yield(get_tree().create_timer(1.5), "timeout")
+	first_system = false
 	
 	radius = 0
 	belt = 0
@@ -103,7 +122,7 @@ func goto_new_system():
 	
 	G.player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * G.player.max_speed)
 	
-	var wait = 10000 - (OS.get_ticks_msec() - start)
+	var wait = 6000 - (OS.get_ticks_msec() - start)
 	if wait > 1000:
 		yield(get_tree().create_timer(wait / 1000), "timeout")
 	else:
@@ -126,7 +145,7 @@ func goto_new_system():
 	$Tween.start()
 	
 		
-func generate(first = false):
+func generate():
 	yield($Background.generate(), "completed")
 	
 	var star = Planet.instance()
@@ -137,14 +156,14 @@ func generate(first = false):
 	ind.color = star.base_color
 	ind.type = "star"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "star", "body": star, "indicator": ind, "indvis": !first})
+	bodies.append({"type": "star", "body": star, "indicator": ind, "indvis": !first_system})
 	yield(get_tree(), "idle_frame")
 	
 	var revolve_dir = 1 if G.rng.randf() < 0.75 else -1
 	
 	radius = star.diameter + 200
-	for i in G.rng.randi_range(6 if first else 3, 9):
-		if first:
+	for i in G.rng.randi_range(6 if first_system else 3, 9):
+		if first_system:
 			if i == 3:
 				radius += 200
 				belt = radius
@@ -159,7 +178,7 @@ func generate(first = false):
 		var pos = Vector2.RIGHT.rotated(G.rng.randf_range(0, 2 * PI)) * radius
 		radius += G.rng.randi_range(500, 800) * G.rng.randf_range(1, (i + 2) / 2.0)
 		var planet = Planet.instance()
-		if first and i == 2:
+		if first_system and i == 2:
 			planet.radius = 30
 			planet.base_color = Color.green
 			planet.generate_planet(i + 1)
@@ -175,7 +194,7 @@ func generate(first = false):
 		ind = PlanetIndicator.instance()
 		ind.color = planet.base_color
 		$Indicators/I.add_child(ind)
-		bodies.append({"type": "planet", "body": planet, "indicator": ind, "indvis": !first})
+		bodies.append({"type": "planet", "body": planet, "indicator": ind, "indvis": !first_system})
 		yield(get_tree(), "idle_frame")
 
 	if belt == 0:
@@ -198,7 +217,7 @@ func generate(first = false):
 	ind.color = Color.lightgray
 	ind.type = "asteroids"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "belt", "belt": belt, "indicator": ind, "indvis": !first})
+	bodies.append({"type": "belt", "belt": belt, "indicator": ind, "indvis": !first_system})
 	yield(get_tree(), "idle_frame")
 
 	var r = star.diameter + 300
@@ -216,7 +235,7 @@ func generate(first = false):
 	ind.color = Color.magenta
 	ind.type = "exit"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first})
+	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first_system})
 	
 	if state == State.START:
 		state = State.NORMAL

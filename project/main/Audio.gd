@@ -9,6 +9,7 @@ var _music_active = -1
 var _music_tween : Tween = null
 
 func _ready():
+	pause_mode = Node.PAUSE_MODE_PROCESS
 	init()
 	init_wormhole()
 	register("depart", preload("res://sounds/depart.ogg"))

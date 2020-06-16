@@ -14,7 +14,7 @@ font_data = ExtResource( 3 )
 "asteroids",
 ]]
 collision_layer = 4
-collision_mask = 5
+collision_mask = 7
 contacts_reported = 1
 script = ExtResource( 2 )
 

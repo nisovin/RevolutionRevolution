@@ -96,5 +96,5 @@ func generate():
 func _on_Asteroid_body_entered(body):
 	if state == State.PROJECTILE and body.is_in_group("planets"):
 		Audio.play("break", 0.4)
-		body.get_parent().take_damage(size)
+		body.get_parent().take_damage(size if state == State.PROJECTILE else 0)
 		queue_free()

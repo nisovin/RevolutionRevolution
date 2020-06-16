@@ -101,7 +101,7 @@ func generate():
 	img = Image.new()
 	img.create(far_size, far_size, false, Image.FORMAT_RGBA8)
 	img.lock()
-	for i in G.rng.randi_range(600, 1500):
+	for i in G.rng.randi_range(1000, 1500):
 		var v = Vector2(G.rng.randi_range(1, far_size - 1), G.rng.randi_range(1, far_size - 1))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1
@@ -133,7 +133,7 @@ func generate():
 	img = Image.new()
 	img.create(mid_size, mid_size, false, Image.FORMAT_RGBA8)
 	img.lock()
-	for i in G.rng.randi_range(400, 800):
+	for i in G.rng.randi_range(200, 800):
 		var v = Vector2(G.rng.randi_range(1, mid_size - 3), G.rng.randi_range(1, mid_size - 3))
 		var h = G.rng.randf_range(0.5, 1.16)
 		if h > 1: h -= 1

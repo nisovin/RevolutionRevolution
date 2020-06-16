@@ -14,7 +14,7 @@ var dialogs = {
 		"How are you doing, {player}?",
 		"Revolving, ever revolving!",
 		"Hey {player}, how are you?",
-		"Isn't life great, {player}?"
+		"Isn't space great, {player}?"
 	],
 	"open_dejected": [
 		"Ugh, I'm tired of revolving\nall the time.",

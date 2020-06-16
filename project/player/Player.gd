@@ -68,6 +68,7 @@ func _unhandled_input(event):
 				body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
 				if not have_been_rejected:
 					have_been_rejected = true
+					body.get_parent().health = 10
 					call_deferred("emit_signal", "been_rejected")
 		update_asteroid_label()
 	elif event.is_action_pressed("fire"):
