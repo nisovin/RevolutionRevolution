@@ -37,6 +37,7 @@ func _ready():
 	$Planet.radius = size
 	$Planet.generate_planet(1)
 	$Camera2D.target = self
+	$Particles.color = $Planet.base_color
 	
 func speak(text, duration, target):
 	$Planet.speak(text, duration, target)
@@ -192,6 +193,7 @@ func _integrate_forces(_state):
 			state = State.FREE
 			$Camera2D.target = self
 			$Camera2D.loose = true
+			$Particles.emitting = true
 			set_deferred("mode", RigidBody2D.MODE_CHARACTER)
 			call_deferred("emit_signal", "left_home")
 			return
@@ -216,6 +218,7 @@ func cycle_color():
 		$Planet.base_color.h = h
 		$Planet.data = null
 		$Planet.generate_planet(1)
+		$Particles.color = $Planet.base_color
 
 
 func _on_Player_body_entered(body):

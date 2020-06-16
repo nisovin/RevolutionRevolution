@@ -122,7 +122,7 @@ func goto_new_system():
 	
 	G.player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * G.player.max_speed)
 	
-	var wait = 6000 - (OS.get_ticks_msec() - start)
+	var wait = 7000 - (OS.get_ticks_msec() - start)
 	if wait > 1000:
 		yield(get_tree().create_timer(wait / 1000), "timeout")
 	else:

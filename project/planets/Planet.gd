@@ -18,6 +18,12 @@ var voice = 1
 var is_player = false
 var data = null
 
+#func _ready():
+#	radius = 20
+#	base_color = Color.blue
+#	generate_planet(1)
+#	$Sprite.position += Vector2(100, 100)
+
 func _process(delta):
 	if state == State.REVOLVING and revolve_around != null:
 		var v = position - revolve_around.position
@@ -112,8 +118,8 @@ func generate_planet(index):
 		if index > 0:
 			$StaticBody2D/CollisionShape2D.shape.radius = radius * 2
 		
-	var rad_sq = radius * radius
-	var center = Vector2(radius, radius)
+	var rad_sq = (radius + 0.0) * (radius + 0.0)
+	var center = Vector2(radius + 0.5, radius + 0.5)
 	
 	var color_points = []
 	for i in data.color_point_count:
@@ -124,18 +130,20 @@ func generate_planet(index):
 	var image = Image.new()
 	image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
 	image.lock()
-	for x in range(1, diameter - 1):
-		for y in range(1, diameter - 1):
+	for x in diameter:
+		for y in diameter:
 			var v = Vector2(x, y)
+			if x < radius: v.x += 1
+			if y < radius: v.y += 1
 			if v.distance_squared_to(center) <= rad_sq:
 				var color = base_color
 				for p in color_points:
 					var pct = v.distance_squared_to(p.point) / (diameter*diameter) / 1.5
 					var c = p.color
 					color = color.blend(Color(c.r, c.g, c.b, pct))
-				image.set_pixelv(v, color)
+				image.set_pixel(x, y, color)
 			else:
-				image.set_pixelv(v, Color.transparent)
+				image.set_pixel(x, y, Color.transparent)
 	image.unlock()
 	
 	$Sprite.texture = ImageTexture.new()

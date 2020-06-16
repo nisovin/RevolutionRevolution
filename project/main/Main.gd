@@ -2,7 +2,7 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = false
+const skip_start = true
 
 var playing = false
 
@@ -161,31 +161,50 @@ func _on_approached_sun():
 func _on_MousePointer_gui_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		G.player.cycle_color()
+		Audio.play("playervoice")
 	
 func _on_PlayerName_text_entered(new_text):
+	Audio.play("click")
 	start()
 	
 func _on_PlayButton_pressed():
+	Audio.play("click")
 	start()
 
 func _on_SettingsButton_pressed():
 	pass
 
 func _on_CreditsButton_pressed():
+	Audio.play("click")
 	$Overlay/Credits.show()
 
+func _on_RichTextLabel_meta_clicked(meta):
+	OS.shell_open(meta)
+	
 func _on_CloseCreditsButton_pressed():
+	Audio.play("click")
 	$Overlay/Credits.hide()
 
 func _on_VolumeSlider_value_changed(value):
+	print("yay")
 	AudioServer.set_bus_volume_db(0, linear2db(value / 100.0))
 
 func _on_ResumeButton_pressed():
 	$GUI/PauseMenu.hide()
 	get_tree().paused = false
+	Audio.play("click")
 
 func _on_FullScreenButton_pressed():
+	Audio.play("click")
 	OS.window_fullscreen = not OS.window_fullscreen
 
 func _on_QuitButton_pressed():
 	get_tree().quit()
+
+func _on_button_mouse_entered():
+	Audio.play("rollover")
+
+func _on_VolumeSlider_gui_input(event):
+	if event is InputEventMouseButton and not event.pressed and event.button_index == BUTTON_LEFT:
+		Audio.play("click")
+

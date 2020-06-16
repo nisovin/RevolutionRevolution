@@ -12,6 +12,8 @@ func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
 	init()
 	init_wormhole()
+	register("rollover", preload("res://sounds/rollover6.ogg"))
+	register("click", preload("res://sounds/click4.ogg"))
 	register("depart", preload("res://sounds/depart.ogg"))
 	register("launch", preload("res://sounds/flaunch.wav"))
 	register("break", preload("res://sounds/break.ogg"))
