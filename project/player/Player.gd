@@ -35,7 +35,7 @@ func _ready():
 	$Planet.set_as_player()
 	$Planet.base_color = Color.cyan
 	$Planet.radius = size
-	$Planet.generate_planet(1)
+	$Planet.generate_planet(1, true)
 	$Camera2D.target = self
 	$Particles.color = $Planet.base_color
 	
@@ -98,6 +98,7 @@ func reset():
 	set_position_and_velocity(Vector2.ZERO, Vector2.ZERO)
 
 func set_home(home):
+	print(home)
 	parent = home
 	$Camera2D.target = home
 
@@ -217,7 +218,7 @@ func cycle_color():
 		if h < 0.33: h += 0.33
 		$Planet.base_color.h = h
 		$Planet.data = null
-		$Planet.generate_planet(1)
+		$Planet.generate_planet(1, true)
 		$Particles.color = $Planet.base_color
 
 
@@ -234,7 +235,6 @@ func _on_Player_body_entered(body):
 		if base_dam > 0:
 			var vel = linear_velocity.length()
 			if vel > 150:
-				print(vel)
 				take_damage(vel / 100 * base_dam, true)
 				Audio.play("thwack")
 	elif body.is_in_group("asteroids"):

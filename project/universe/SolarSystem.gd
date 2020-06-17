@@ -9,6 +9,7 @@ enum State { START, NORMAL, TRAVELING }
 const Planet = preload("res://planets/Planet.tscn")
 const PlanetIndicator = preload("res://planets/PlanetIndicator.tscn")
 const Asteroid = preload("res://asteroids/Asteroid.tscn")
+const Comet = preload("res://universe/Comet.tscn")
 const SolarFlare = preload("res://universe/SolarFlare.tscn")
 
 var state = State.START
@@ -149,7 +150,7 @@ func generate():
 	yield($Background.generate(), "completed")
 	
 	var star = Planet.instance()
-	star.generate(0)
+	star.generate(0, first_system)
 	star.modulate = Color(1.3, 1.3, 1.3)
 	$Planets.add_child(star)
 	var ind = PlanetIndicator.instance()
@@ -181,10 +182,12 @@ func generate():
 		if first_system and i == 2:
 			planet.radius = 30
 			planet.base_color = Color.green
-			planet.generate_planet(i + 1)
+			planet.generate_planet(i + 1, first_system)
 			home_planet = planet
 		else:
-			planet.generate(i + 1)
+			planet.generate(i + 1, first_system)
+			if not first_system and i == 0:
+				home_planet = planet
 		$Planets.add_child(planet)
 		planet.modulate = Color(1.07, 1.07, 1.07)
 		planet.position = pos
@@ -236,6 +239,9 @@ func generate():
 	ind.type = "exit"
 	$Indicators/I.add_child(ind)
 	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first_system})
+	
+	var comet = Comet.instance()
+	add_child(comet)
 	
 	if state == State.START:
 		state = State.NORMAL

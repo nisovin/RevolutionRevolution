@@ -14,6 +14,7 @@ var health = 20
 var radius = 0
 var diameter = 0
 var base_color = Color.white
+var has_rings = false
 var voice = 1
 var is_player = false
 var data = null
@@ -21,8 +22,8 @@ var data = null
 #func _ready():
 #	radius = 20
 #	base_color = Color.blue
-#	generate_planet(1)
-#	$Sprite.position += Vector2(100, 100)
+#	generate_planet(1, false)
+#	#$Sprite.position += Vector2(100, 100)
 
 func _process(delta):
 	if state == State.REVOLVING and revolve_around != null:
@@ -64,18 +65,17 @@ func take_damage(amount):
 		speak(G.rand_dialog("fed_up"), 2.0, G.player.position)
 		state = State.LEAVING
 		emit_signal("leaving")
-		
 
-func generate(index):
+func generate(index, first_system):
 	if index == 0:
 		radius = G.rng.randi_range(150, 300)
 		base_color = Color.from_hsv(G.rng.randf_range(0.05, 0.17), 1.0, G.rng.randf_range(0.8, 1.0))
 	else:
 		radius = G.rng.randi_range(15, 30 + index * 5)
 		base_color = Color.from_hsv(G.rng.randf_range(0.3, 0.95), G.rng.randf_range(0.8, 1.0), G.rng.randf_range(0.5, 0.9))
-	generate_planet(index)
+	generate_planet(index, first_system)
 
-func generate_planet(index):
+func generate_planet(index, first_system):
 	if data == null:
 		data = {}
 		data.color_point_count = min(G.rng.randi_range(2, radius / 10), 15)
@@ -181,3 +181,21 @@ func generate_planet(index):
 	
 	$Dialog/Text.set("custom_colors/font_color", base_color.lightened(0.8))
 	$Dialog/Text.set("custom_colors/font_color_shadow", base_color.darkened(0.6))
+
+	has_rings = not first_system and not is_player and index >= 3 and G.rng.randf() < 0.3
+	if has_rings:
+		update()
+
+func _draw():
+	if has_rings:
+		var rr = radius * 2 + G.rng.randf_range(radius * 0.5, radius * 1)
+		var color = Color.from_hsv(G.rng.randf_range(0, 1), G.rng.randf_range(0.25, 0.5), 1, 0.5)
+		for x in G.rng.randi_range(1, 3):
+			rr += G.rng.randf_range(radius * 0.25, radius * 0.5)
+			color.h += G.rng.randf_range(-0.2, 0.2)
+			for i in G.rng.randi_range(12, 20):
+				color.h += G.rng.randf_range(-0.05, 0.05)
+				draw_arc(Vector2.ZERO, rr, 0, 2 * PI, radius * PI, color, 1.3)
+				rr += G.rng.randf_range(1.5, 3)
+		$StaticBody2D/CollisionShape2D.shape.radius = rr
+			

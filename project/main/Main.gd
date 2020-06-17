@@ -17,7 +17,6 @@ func _ready():
 func _input(event):
 	if event is InputEventKey and event.pressed and event.scancode == KEY_F11:
 		OS.window_fullscreen = not OS.window_fullscreen
-		
 	if event.is_action_pressed("ui_cancel") and playing and $SolarSystem.can_pause():
 		pause()
 
@@ -36,7 +35,7 @@ func start():
 	yield(get_tree().create_timer(0.2, false), "timeout")
 	
 	var system = SolarSystem.instance()
-	system.first_system = true
+	system.first_system = false if skip_start else true
 	add_child(system)
 	yield(get_tree().create_timer(0.2, false), "timeout")
 	yield(system.generate(), "completed")
