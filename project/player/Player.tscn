@@ -38,7 +38,9 @@ font_data = ExtResource( 3 )
 [sub_resource type="CircleShape2D" id=7]
 radius = 220.0
 
-[node name="Player" type="RigidBody2D"]
+[node name="Player" type="RigidBody2D" groups=[
+"player",
+]]
 z_index = 1
 input_pickable = true
 collision_mask = 6

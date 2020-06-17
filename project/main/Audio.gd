@@ -16,7 +16,11 @@ func _ready():
 	register("click", preload("res://sounds/click4.ogg"))
 	register("depart", preload("res://sounds/depart.ogg"))
 	register("launch", preload("res://sounds/flaunch.wav"))
+	register("iceball", preload("res://sounds/iceball.wav"))
 	register("break", preload("res://sounds/break.ogg"))
+	register("comethit", preload("res://sounds/comet_hit.ogg"))
+	register("sunattack", preload("res://sounds/fireattack.wav"))
+	register("sunhit", preload("res://sounds/firehit.ogg"))
 
 	for i in 3:
 		register("thwack", load("res://sounds/thwack-0" + str(i+1) + ".ogg"))

@@ -149,11 +149,6 @@ func generate_planet(index, first_system):
 	$Sprite.texture = ImageTexture.new()
 	$Sprite.texture.create_from_image(image, 0)
 	
-	if index == 0:
-		$Sprite.material = null
-		$NameLabel.text = "Sun"
-		return
-	
 	var noise = OpenSimplexNoise.new()
 	noise.seed = data.noise_seed
 	noise.lacunarity = data.noise_lacunarity
@@ -161,9 +156,21 @@ func generate_planet(index, first_system):
 	noise.persistence = data.noise_persistence
 	var noise_img = noise.get_seamless_image(diameter * 2)
 	var noise_tex = ImageTexture.new()
-	noise_tex.create_from_image(noise_img, 0)
+	noise_tex.create_from_image(noise_img, Texture.FLAG_REPEAT)
 	
 	var mat = $Sprite.material as ShaderMaterial
+	
+	if index == 0:
+		var c = base_color
+		c.h *= 0.2
+		mat.shader = preload("res://planets/star_shader.shader")
+		mat.set_shader_param("color", c)
+		mat.set_shader_param("noise_texture", noise_tex)
+		$NameLabel.text = "Sun"
+		$StaticBody2D.queue_free()
+		return
+	
+	
 	mat.set_shader_param("color", data.cloud_color)
 	mat.set_shader_param("speed", data.cloud_speed)
 	mat.set_shader_param("density", data.cloud_density)

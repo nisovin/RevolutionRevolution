@@ -1,6 +1,10 @@
 extends RigidBody2D
 
+const Bullet = preload("res://universe/CometBullet.tscn")
+
 var color
+
+var shoot_cooldown = 0
 
 func _ready():
 	generate()
@@ -14,47 +18,48 @@ func _integrate_forces(state):
 		elif v > 0 and v < 200 * 200:
 			linear_velocity = linear_velocity.normalized() * 200
 		$Particles.rotation = linear_velocity.angle() + PI
-		print(linear_velocity.length())
 
-func generate2():
-	pass
+func _physics_process(delta):
+	shoot_cooldown -= delta
 
-	var inner_rad = G.rng.randi_range(6, 9)
-	var outer_rad = G.rng.randi_range(inner_rad + 2, inner_rad + 5)
-	var point_count = G.rng.randi_range(4, 7)
-	
-	var center = Vector2(outer_rad, outer_rad)
-	var points = []
-	var interval = 2 * PI / point_count
-	
-	for i in point_count:
-		var angle = i * interval + G.rng.randf_range(0, interval / 3)
-		var offset = Vector2.RIGHT.rotated(angle) * outer_rad
-		points.append(center + offset)
-	
+func _on_Timer_timeout():
+	if shoot_cooldown <= 0 and G.player != null and G.player.position.distance_squared_to(position) < 500 * 500:
+		shoot_cooldown = 2
+		var dir = position.direction_to(G.player.position + G.player.linear_velocity)
+		var theta = (PI / 2) / 6
+		dir = dir.rotated(-theta * 3)
+		for i in 7:
+			var bullet = Bullet.instance()
+			bullet.position = position
+			bullet.fire(dir * 500)
+			get_parent().add_child(bullet)
+			dir = dir.rotated(theta)
+		Audio.play("iceball", 0.3)
 	
 func generate():
 	color = Color.from_hsv(G.rng.randf_range(0.5, 0.6), 0.5, 1)
 	var inner_rad = G.rng.randi_range(3, 5)
 	var outer_rad = G.rng.randi_range(inner_rad + 5, inner_rad + 7)
 	var center = Vector2(outer_rad, outer_rad)
-	var spikes = outer_rad * 2
+	var spikes = outer_rad * 3
 	var theta = 2 * PI / spikes
 	
 	var img = Image.new()
 	img.create(outer_rad * 2, outer_rad * 2, false, Image.FORMAT_RGBA8)
 	img.lock()
 	var t = 0
-	for i in spikes:
+	for i in spikes / 3:
 		var dir = Vector2.RIGHT.rotated(t)
 		var l = G.rng.randf_range(inner_rad, outer_rad)
-		var r = 0
-		while r < l:
-			var c = color
-			c.s = 0.7 - (r / outer_rad / 2)
-			var v = center + dir * r
-			img.set_pixelv(v, c)
-			r += 0.5
+		for j in 3:
+			var r = 0
+			while r < l:
+				var c = color
+				c.s = 0.7 - (r / outer_rad / 2)
+				var v = center + dir * r
+				img.set_pixelv(v, c)
+				r += 0.5
+			dir = dir.rotated(2 * PI / 3)
 		t += theta
 	img.unlock()
 	
@@ -66,3 +71,4 @@ func generate():
 	$Particles.amount = outer_rad * 25
 	$Particles.emission_sphere_radius = inner_rad * 2
 	$CollisionShape2D.shape.radius = (inner_rad + outer_rad) / 2
+

@@ -151,7 +151,7 @@ func generate():
 	
 	var star = Planet.instance()
 	star.generate(0, first_system)
-	star.modulate = Color(1.3, 1.3, 1.3)
+	star.modulate = Color(1.25, 1.2, 1.15)
 	$Planets.add_child(star)
 	var ind = PlanetIndicator.instance()
 	ind.color = star.base_color
@@ -189,7 +189,7 @@ func generate():
 			if not first_system and i == 0:
 				home_planet = planet
 		$Planets.add_child(planet)
-		planet.modulate = Color(1.07, 1.07, 1.07)
+		planet.modulate = Color(1.05, 1.05, 1.05)
 		planet.position = pos
 		planet.revolve_around = star
 		planet.revolve_speed = G.rng.randf_range(0.8, 2.0) / G.rng.randf_range(1, i + 1) * revolve_dir
@@ -240,9 +240,16 @@ func generate():
 	$Indicators/I.add_child(ind)
 	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first_system})
 	
-	var comet = Comet.instance()
-	add_child(comet)
+	if not first_system:
+		var comet = Comet.instance()
+		add_child(comet)
 	
 	if state == State.START:
 		state = State.NORMAL
-		
+
+func _on_Timer_timeout():
+	if first_system: return
+	var flare = SolarFlare.instance()
+	flare.fire(G.player.position.normalized() * 400)
+	add_child(flare)
+	Audio.play("sunattack", 0.5)
