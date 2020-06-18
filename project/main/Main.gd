@@ -21,6 +21,9 @@ func _input(event):
 		pause()
 
 func start():
+	if skip_start:
+		G.first_system = false
+		
 	G.player_name = $Overlay/VBoxContainer/PlayerName.text
 	if G.player_name.strip_edges() == "":
 		G.player_name = "Moon"
@@ -35,7 +38,6 @@ func start():
 	yield(get_tree().create_timer(0.2, false), "timeout")
 	
 	var system = SolarSystem.instance()
-	system.first_system = false if skip_start else true
 	add_child(system)
 	yield(get_tree().create_timer(0.2, false), "timeout")
 	yield(system.generate(), "completed")
@@ -54,7 +56,7 @@ func start():
 	player.connect("captured_asteroid", self, "_on_captured")
 	system.connect("arrived_at_belt", self, "_on_enter_belt")
 	player.connect("been_rejected", self, "_on_rejection")
-	system.connect("planet_leaving", self, "_on_planet_leave")
+	system.connect("planet_defeated", self, "_on_planet_defeated")
 	system.connect("approached_sun", self, "_on_approached_sun")
 	
 	if skip_start:
@@ -108,7 +110,7 @@ func _on_enter_belt():
 
 func _on_captured():
 	yield(get_tree().create_timer(2, false), "timeout")
-	show_hint("Go try to recruit a planet", 3)
+	show_hint("Go try to recruit a moon", 3)
 	var min_dist = 0
 	var min_index = 5
 	var bodies = $SolarSystem.bodies
@@ -124,7 +126,7 @@ func _on_rejection():
 	yield(get_tree().create_timer(3, false), "timeout")
 	show_hint("Right click to launch an asteroid", 3)
 	
-func _on_planet_leave():
+func _on_planet_defeated():
 	print("main planet leave")
 	yield(get_tree().create_timer(3, false), "timeout")
 	show_hint(G.rand_dialog("sun_question"), 3, Color.yellow)

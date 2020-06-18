@@ -2,24 +2,32 @@ extends Node2D
 
 enum State { REVOLVING, LEAVING }
 
-signal leaving
+signal attacked
+signal defeated
 
 var state = State.REVOLVING
 var revolve_around = null
 var revolve_speed = 1
+var revolve_distance = 10
 var captured_by = null
 var leave_vector = null
 
+var type = "planet"
 var health = 20
 var radius = 0
 var diameter = 0
+var moon_radius = 0
 var base_color = Color.white
 var has_rings = false
+var moons = []
 var voice = 1
 var is_player = false
 var data = null
 
-#func _ready():
+func _ready():
+	if revolve_around != null:
+		revolve_distance = position.distance_to(revolve_around.position)
+		print(self, $NameLabel.text, " ", revolve_around, " ", revolve_distance)
 #	radius = 20
 #	base_color = Color.blue
 #	generate_planet(1, false)
@@ -27,9 +35,9 @@ var data = null
 
 func _process(delta):
 	if state == State.REVOLVING and revolve_around != null:
-		var v = position - revolve_around.position
+		var v = revolve_around.position.direction_to(position)
 		v = v.rotated(deg2rad(revolve_speed) * delta)
-		position = revolve_around.position + v
+		position = revolve_around.position + v * revolve_distance
 	elif state == State.LEAVING:
 		var dir = position.normalized()
 		position += dir * 300 * delta
@@ -61,21 +69,31 @@ func take_damage(amount):
 	health -= amount
 	if health > 0:
 		speak(G.rand_dialog("take_damage"), 1.5, G.player.position)
+		emit_signal("attacked")
 	else:
 		speak(G.rand_dialog("fed_up"), 2.0, G.player.position)
 		state = State.LEAVING
-		emit_signal("leaving")
+		emit_signal("defeated")
 
-func generate(index, first_system):
-	if index == 0:
-		radius = G.rng.randi_range(150, 300)
-		base_color = Color.from_hsv(G.rng.randf_range(0.05, 0.17), 1.0, G.rng.randf_range(0.8, 1.0))
-	else:
-		radius = G.rng.randi_range(15, 30 + index * 5)
-		base_color = Color.from_hsv(G.rng.randf_range(0.3, 0.95), G.rng.randf_range(0.8, 1.0), G.rng.randf_range(0.5, 0.9))
-	generate_planet(index, first_system)
-
-func generate_planet(index, first_system):
+func generate_star():
+	type = "star"
+	radius = G.rng.randi_range(150, 300)
+	base_color = Color.from_hsv(G.rng.randf_range(0.05, 0.17), 1.0, G.rng.randf_range(0.8, 1.0))
+	generate(0)
+	
+func generate_planet(index):
+	type = "planet"
+	radius = G.rng.randi_range(15, 30 + index * 5)
+	base_color = Color.from_hsv(G.rng.randf_range(0.3, 0.95), G.rng.randf_range(0.8, 1.0), G.rng.randf_range(0.5, 0.9))
+	generate(index)
+	
+func generate_moon(max_size):
+	type = "moon"
+	radius = min(max_size, G.rng.randi_range(4, 12))
+	base_color = Color.from_hsv(G.rng.randf_range(0.3, 0.95), G.rng.randf_range(0.5, 0.7), G.rng.randf_range(0.5, 0.7))
+	generate(1)
+	
+func generate(index):
 	if data == null:
 		data = {}
 		data.color_point_count = min(G.rng.randi_range(2, radius / 10), 15)
@@ -89,7 +107,7 @@ func generate_planet(index, first_system):
 			else:
 				c = base_color.lightened(G.rng.randf_range(0.1, 0.2))
 			var h = c.h
-			if index == 0:
+			if type == "star":
 				h += G.rng.randf_range(-0.04, 0.04)
 				if h > 0.17: h = 0.17
 			else:
@@ -109,24 +127,51 @@ func generate_planet(index, first_system):
 		data.cloud_density = G.rng.randf_range(0.5, 0.8)
 		data.rotated = G.rng.randf() < 0.2
 		
+	# size
 	diameter = radius * 2 + 1
-	if not is_player:
-		if index == 0:
-			voice = 1
-		else:
-			voice = G.rng.randi_range(2, 9)
-		if index > 0:
-			$StaticBody2D/CollisionShape2D.shape.radius = radius * 2
-		
+	moon_radius = radius * 5
 	var rad_sq = (radius + 0.0) * (radius + 0.0)
 	var center = Vector2(radius + 0.5, radius + 0.5)
 	
+	# set collision shape
+	if type == "star":
+		$StaticBody2D.queue_free()
+	elif not is_player:
+		$StaticBody2D/CollisionShape2D.shape.radius = radius * 2
+	
+	# set rotation
+	if data.rotated and type == "planet":
+		$Sprite.rotation = PI / 2
+	else:
+		$Sprite.rotation = 0
+		
+	# choose voice
+	if not is_player:
+		if type == "star":
+			voice = 1
+		else:
+			voice = G.rng.randi_range(2, 9)
+	
+	# choose name
+	if type == "star":
+		$NameLabel.text = "Sun"
+	elif type == "planet":
+		$NameLabel.text = G.rand_planet_name()
+		$NameLabel.set("custom_colors/font_color", base_color.lightened(0.6))
+		$NameLabel.set("custom_colors/font_outline_modulate", base_color.darkened(0.6))
+		$NameLabel.rect_position.y -= radius * 2 + 20
+	elif type == "moon":
+		$NameLabel.text = "Moon"
+		$NameLabel.hide()
+	
+	# choose other colors
 	var color_points = []
 	for i in data.color_point_count:
 		var c = data.color_points_colors[i]
 		var p = center + Vector2(radius, radius).rotated(G.rng.randf_range(0, 2 * PI))
 		color_points.append({"color": c, "point": p})
 	
+	# create planet sprite
 	var image = Image.new()
 	image.create(diameter, diameter, false, Image.FORMAT_RGBA8)
 	image.lock()
@@ -145,10 +190,10 @@ func generate_planet(index, first_system):
 			else:
 				image.set_pixel(x, y, Color.transparent)
 	image.unlock()
-	
 	$Sprite.texture = ImageTexture.new()
-	$Sprite.texture.create_from_image(image, 0)
+	$Sprite.texture.create_from_image(image, 0)	
 	
+	# create cloud texture
 	var noise = OpenSimplexNoise.new()
 	noise.seed = data.noise_seed
 	noise.lacunarity = data.noise_lacunarity
@@ -158,40 +203,36 @@ func generate_planet(index, first_system):
 	var noise_tex = ImageTexture.new()
 	noise_tex.create_from_image(noise_img, Texture.FLAG_REPEAT)
 	
+	# add cloud shader params
 	var mat = $Sprite.material as ShaderMaterial
-	
-	if index == 0:
+	if type == "star":
 		var c = base_color
 		c.h *= 0.2
 		mat.shader = preload("res://planets/star_shader.shader")
 		mat.set_shader_param("color", c)
 		mat.set_shader_param("noise_texture", noise_tex)
-		$NameLabel.text = "Sun"
-		$StaticBody2D.queue_free()
-		return
-	
-	
-	mat.set_shader_param("color", data.cloud_color)
-	mat.set_shader_param("speed", data.cloud_speed)
-	mat.set_shader_param("density", data.cloud_density)
-	mat.set_shader_param("noise_texture", noise_tex)
-
-	if data.rotated:
-		$Sprite.rotation = PI / 2
+	elif type == "planet":
+		mat.set_shader_param("color", data.cloud_color)
+		mat.set_shader_param("speed", data.cloud_speed)
+		mat.set_shader_param("density", data.cloud_density)
+		mat.set_shader_param("noise_texture", noise_tex)
 	else:
-		$Sprite.rotation = 0
+		$Sprite.material = null
 
-	$NameLabel.text = G.rand_planet_name()
-	$NameLabel.set("custom_colors/font_color", base_color.lightened(0.6))
-	$NameLabel.set("custom_colors/font_outline_modulate", base_color.darkened(0.6))
-	$NameLabel.rect_position.y -= radius * 2 + 20
-	
-	$Dialog/Text.set("custom_colors/font_color", base_color.lightened(0.8))
-	$Dialog/Text.set("custom_colors/font_color_shadow", base_color.darkened(0.6))
+	# set dialog color
+	if type == "planet":
+		$Dialog/Text.set("custom_colors/font_color", base_color.lightened(0.8))
+		$Dialog/Text.set("custom_colors/font_color_shadow", base_color.darkened(0.6))
 
-	has_rings = not first_system and not is_player and index >= 3 and G.rng.randf() < 0.3
-	if has_rings:
-		update()
+	# add planet rings
+	if type == "planet" and not is_player and not G.first_system:
+		has_rings = radius > 30 and index >= 3 and G.rng.randf() < 0.3
+		if has_rings:
+			data.rings = []
+			var rr = radius * 2 + G.rng.randf_range(radius * 1.5, radius * 2)
+			for x in G.rng.randi_range(1, 3):
+				data.rings.append({"radius": rr, "width": G.rng.randi_range(8, 15)})
+			update()
 
 func _draw():
 	if has_rings:

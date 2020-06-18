@@ -20,6 +20,8 @@ script = ExtResource( 2 )
 
 [node name="Asteroids" type="Node2D" parent="."]
 
+[node name="Spawns" type="Node2D" parent="."]
+
 [node name="Indicators" type="CanvasLayer" parent="."]
 
 [node name="I" type="Node2D" parent="Indicators"]
@@ -42,6 +44,6 @@ __meta__ = {
 [node name="Tween" type="Tween" parent="."]
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 2.0
 autostart = true
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

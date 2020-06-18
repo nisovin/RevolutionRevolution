@@ -4,6 +4,7 @@ var rng := RandomNumberGenerator.new()
 
 var player
 var player_name = "Moon"
+var first_system = true
 
 var unlocked_asteroids = false
 var unlocked_planets = false
@@ -69,6 +70,15 @@ var dialogs = {
 		"Yeehaw!",
 		"Woohoo!",
 		"Yes!"
+	],
+	"planet_deny": [
+		"My moon{s} will stay.",
+		"My moon{s} will revolve.",
+		"Revolution is what moons do.",
+		"You cannot free my moon{s}."
+	],
+	"moon_help": [
+		
 	],
 	"rejection": [
 		"No!",

@@ -1,8 +1,9 @@
 extends Node2D
 
 signal arrived_at_belt
-signal planet_leaving
+signal planet_defeated
 signal approached_sun
+signal traveled
 
 enum State { START, NORMAL, TRAVELING }
 
@@ -17,12 +18,15 @@ var bodies = []
 var home_planet
 var radius = 0
 var belt = 0
-var first_system = false
 var have_entered_belt = false
 var have_planet_fled = false
 var have_approached_sun = false
+var have_traveled = false
 var prevent_leave_cooldown = 0
 var prevent_leave_speak_cooldown = 0
+
+var last_attacked_planet = 0
+var star_attack_cooldown = 0
 
 func _process(delta):
 	var vp = get_viewport().get_size_override()
@@ -85,10 +89,16 @@ func _physics_process(delta):
 			else:
 				prevent_leave_speak_cooldown -= delta
 
-func _on_planet_leave():
+func _on_planet_attacked():
+	last_attacked_planet = OS.get_ticks_msec()
+
+func _on_planet_defeated():
 	if not have_planet_fled:
 		have_planet_fled = true
-		call_deferred("emit_signal", "planet_leaving")
+		call_deferred("emit_signal", "planet_defeated")
+	if not G.first_system:
+		var comet = Comet.instance()
+		$Spawns.add_child(comet)
 
 func can_pause():
 	return state == State.NORMAL
@@ -112,13 +122,16 @@ func goto_new_system():
 		child.queue_free()
 	for child in $Asteroids.get_children():
 		child.queue_free()
+	for child in $Spawns.get_children():
+		child.queue_free()
 	for child in $Indicators/I.get_children():
 		child.queue_free()
 	yield(get_tree().create_timer(1.5), "timeout")
-	first_system = false
+	G.first_system = false
 	
 	radius = 0
 	belt = 0
+	last_attacked_planet = 0
 	yield(generate(), "completed")
 	
 	G.player.set_position_and_velocity(-player_dir * radius * 0.8, player_dir.normalized() * G.player.max_speed)
@@ -139,33 +152,40 @@ func goto_new_system():
 	G.player.travel(false)
 	state = State.NORMAL
 	
-	yield(get_tree().create_timer(5), "timeout")
+	yield(get_tree().create_timer(5, false), "timeout")
 	$Indicators/SystemName.text = G.rand_system_name()
 	$Tween.interpolate_property($Indicators/SystemName, "modulate", Color.transparent, Color.white, 1)
 	$Tween.interpolate_property($Indicators/SystemName, "modulate", Color.white, Color.transparent, 1, Tween.TRANS_LINEAR, Tween.EASE_IN, 4)
 	$Tween.start()
 	
+	if not have_traveled:
+		yield(get_tree().create_timer(2, false), "timeout")
+		emit_signal("traveled")
 		
 func generate():
 	yield($Background.generate(), "completed")
 	
+	# system revolution direction
+	var revolve_dir = 1 if G.rng.randf() < 0.75 else -1
+	
+	# generate star
 	var star = Planet.instance()
-	star.generate(0, first_system)
+	star.generate_star()
 	star.modulate = Color(1.25, 1.2, 1.15)
 	$Planets.add_child(star)
 	var ind = PlanetIndicator.instance()
 	ind.color = star.base_color
 	ind.type = "star"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "star", "body": star, "indicator": ind, "indvis": !first_system})
+	bodies.append({"type": "star", "body": star, "indicator": ind, "indvis": !G.first_system})
 	yield(get_tree(), "idle_frame")
+	radius = star.diameter + 400
 	
-	var revolve_dir = 1 if G.rng.randf() < 0.75 else -1
-	
-	radius = star.diameter + 200
-	for i in G.rng.randi_range(6 if first_system else 3, 9):
-		if first_system:
-			if i == 3:
+	# generate planets
+	for i in G.rng.randi_range(6 if G.first_system else 3, 9):
+		# decide on asteroid belt
+		if G.first_system:
+			if i == 3: # force asteroid belt at position #3
 				radius += 200
 				belt = radius
 				radius += G.rng.randi_range(600, 1000)
@@ -176,29 +196,47 @@ func generate():
 				belt = radius
 				radius += G.rng.randi_range(600, 1000)
 				continue
+		# add planet
 		var pos = Vector2.RIGHT.rotated(G.rng.randf_range(0, 2 * PI)) * radius
 		radius += G.rng.randi_range(500, 800) * G.rng.randf_range(1, (i + 2) / 2.0)
 		var planet = Planet.instance()
-		if first_system and i == 2:
+		if G.first_system and i == 2: # home planet at position #2
 			planet.radius = 30
 			planet.base_color = Color.green
-			planet.generate_planet(i + 1, first_system)
+			planet.generate("planet", i + 1)
 			home_planet = planet
 		else:
-			planet.generate(i + 1, first_system)
-			if not first_system and i == 0:
+			planet.generate_planet(i + 1)
+			if not G.first_system and i == 0:
 				home_planet = planet
-		$Planets.add_child(planet)
 		planet.modulate = Color(1.05, 1.05, 1.05)
 		planet.position = pos
 		planet.revolve_around = star
-		planet.revolve_speed = G.rng.randf_range(0.8, 2.0) / G.rng.randf_range(1, i + 1) * revolve_dir
-		planet.connect("leaving", self, "_on_planet_leave")
+		planet.revolve_speed = G.rng.randf_range(1, 2.5) / G.rng.randf_range(1, i + 1) * revolve_dir
+		planet.connect("defeated", self, "_on_planet_defeated")
+		planet.connect("attacked", self, "_on_planet_attacked")
+		$Planets.add_child(planet)
 		ind = PlanetIndicator.instance()
 		ind.color = planet.base_color
 		$Indicators/I.add_child(ind)
-		bodies.append({"type": "planet", "body": planet, "indicator": ind, "indvis": !first_system})
+		bodies.append({"type": "planet", "body": planet, "indicator": ind, "indvis": !G.first_system})
 		yield(get_tree(), "idle_frame")
+		# add moons
+		if home_planet != planet:
+			var orbit = planet.moon_radius + G.rng.randf_range(0, planet.radius)
+			var moon_count = min(3, G.rng.randi_range(1, planet.radius / 15))
+			if G.first_system:
+				moon_count = 1
+			for m in moon_count:
+				var moon = Planet.instance()
+				moon.generate_moon(planet.radius / 3)
+				moon.position = planet.position + Vector2.RIGHT.rotated(G.rng.randf_range(0, 2 * PI)) * orbit
+				moon.revolve_around = planet
+				moon.revolve_speed = G.rng.randf_range(30, 60) * revolve_dir
+				orbit += planet.radius + moon.radius * 2 + G.rng.randf_range(0, planet.radius)
+				$Planets.add_child(moon)
+				planet.moons.append(moon)
+				
 
 	if belt == 0:
 		belt = radius
@@ -220,7 +258,7 @@ func generate():
 	ind.color = Color.lightgray
 	ind.type = "asteroids"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "belt", "belt": belt, "indicator": ind, "indvis": !first_system})
+	bodies.append({"type": "belt", "belt": belt, "indicator": ind, "indvis": !G.first_system})
 	yield(get_tree(), "idle_frame")
 
 	var r = star.diameter + 300
@@ -238,18 +276,19 @@ func generate():
 	ind.color = Color.magenta
 	ind.type = "exit"
 	$Indicators/I.add_child(ind)
-	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !first_system})
-	
-	if not first_system:
-		var comet = Comet.instance()
-		add_child(comet)
-	
+	bodies.append({"type": "exit", "distance": radius, "indicator": ind, "indvis": !G.first_system})
+		
 	if state == State.START:
 		state = State.NORMAL
 
 func _on_Timer_timeout():
-	if first_system: return
+	if G.first_system: return
+	if star_attack_cooldown > 0:
+		star_attack_cooldown -= $Timer.wait_time
+	if star_attack_cooldown > 0: return
+	if last_attacked_planet < OS.get_ticks_msec() - 15000: return
 	var flare = SolarFlare.instance()
 	flare.fire(G.player.position.normalized() * 400)
-	add_child(flare)
+	$Spawns.add_child(flare)
 	Audio.play("sunattack", 0.5)
+	star_attack_cooldown = 8

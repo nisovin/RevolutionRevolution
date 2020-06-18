@@ -35,7 +35,7 @@ func _ready():
 	$Planet.set_as_player()
 	$Planet.base_color = Color.cyan
 	$Planet.radius = size
-	$Planet.generate_planet(1, true)
+	$Planet.generate(1)
 	$Camera2D.target = self
 	$Particles.color = $Planet.base_color
 	
@@ -54,38 +54,9 @@ func take_damage(amount, recoverable = false):
 func _unhandled_input(event):
 	if state != State.FREE: return
 	if event.is_action_pressed("capture"):
-		speak(G.rand_dialog("call_out"), 1.0, position + Vector2.DOWN * 100)
-		for body in $ShoutRange.get_overlapping_bodies():
-			if body.is_in_group("asteroids"):
-				if body.size < size * .75 and asteroids.size() < 15:
-					var cap = body.capture(self)
-					if cap:
-						asteroids.append(body)
-						if not have_captured:
-							have_captured = true
-							call_deferred("emit_signal", "captured_asteroid")
-			elif body.is_in_group("planets"):
-				yield(get_tree().create_timer(1), "timeout")
-				body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
-				if not have_been_rejected:
-					have_been_rejected = true
-					body.get_parent().health = 10
-					call_deferred("emit_signal", "been_rejected")
-		update_asteroid_label()
+		recruit()
 	elif event.is_action_pressed("fire"):
-		var target = get_global_mouse_position()
-		var to_fire = null
-		var nearest = 0
-		for a in asteroids:
-			var d = a.global_position.distance_squared_to(global_position)
-			if nearest == 0 or d < nearest:
-				nearest = d
-				to_fire = a
-		if to_fire != null:
-			to_fire.fire(to_fire.global_position.direction_to(target) * fire_speed)
-			Audio.play("launch", 0.5)
-			asteroids.erase(to_fire)
-			update_asteroid_label()
+		fire()
 	elif event.is_action_pressed("ui_page_up"):
 		size += 1
 		$Planet.radius = size
@@ -93,12 +64,48 @@ func _unhandled_input(event):
 		$CollisionShape2D.shape.radius = size * 2
 		mass = size
 
+func recruit():
+	speak(G.rand_dialog("call_out"), 1.0, position + Vector2.DOWN * 100)
+	for body in $ShoutRange.get_overlapping_bodies():
+		if body.is_in_group("asteroids"):
+			if body.size < size * .75 and asteroids.size() < 15:
+				var cap = body.capture(self)
+				if cap:
+					asteroids.append(body)
+					if not have_captured:
+						have_captured = true
+						call_deferred("emit_signal", "captured_asteroid")
+		elif body.is_in_group("planets"):
+			if body.type == "moon":
+				pass # TODO
+			yield(get_tree().create_timer(1), "timeout")
+			body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
+			if not have_been_rejected:
+				have_been_rejected = true
+				body.get_parent().health = 10
+				call_deferred("emit_signal", "been_rejected")
+	update_asteroid_label()
+
+func fire():
+	var target = get_global_mouse_position()
+	var to_fire = null
+	var nearest = 0
+	for a in asteroids:
+		var d = a.global_position.distance_squared_to(global_position)
+		if nearest == 0 or d < nearest:
+			nearest = d
+			to_fire = a
+	if to_fire != null:
+		to_fire.fire(to_fire.global_position.direction_to(target) * fire_speed)
+		Audio.play("launch", 0.5)
+		asteroids.erase(to_fire)
+		update_asteroid_label()
+
 func reset():
 	state = State.START
 	set_position_and_velocity(Vector2.ZERO, Vector2.ZERO)
 
 func set_home(home):
-	print(home)
 	parent = home
 	$Camera2D.target = home
 
@@ -218,7 +225,7 @@ func cycle_color():
 		if h < 0.33: h += 0.33
 		$Planet.base_color.h = h
 		$Planet.data = null
-		$Planet.generate_planet(1, true)
+		$Planet.generate("planet", 1, true)
 		$Particles.color = $Planet.base_color
 
 
