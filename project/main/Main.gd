@@ -2,7 +2,7 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = false
+const skip_start = true
 
 var playing = false
 
@@ -11,6 +11,8 @@ func _ready():
 	yield($Background.generate(), "completed")
 	$Tween.interpolate_property($Overlay/ColorRect, "color", Color.black, Color(0, 0, 0, 0), 1.0)
 	$Tween.start()
+	$Overlay/VBoxContainer/PlayerName.text = "Luna"
+	$Overlay/VBoxContainer/PlayerName.caret_position = 4
 	$Overlay/VBoxContainer/PlayerName.grab_focus()
 	AudioServer.set_bus_volume_db(0, linear2db(0.5))
 
@@ -57,7 +59,10 @@ func start():
 	system.connect("arrived_at_belt", self, "_on_enter_belt")
 	player.connect("been_rejected", self, "_on_rejection")
 	system.connect("planet_defeated", self, "_on_planet_defeated")
+	player.connect("collected_food", self, "_on_collected_food")
 	system.connect("approached_sun", self, "_on_approached_sun")
+	player.connect("died", self, "_on_death")
+	
 	
 	if skip_start:
 		player.start()
@@ -76,15 +81,24 @@ func start():
 	yield(get_tree().create_timer(3.5, false), "timeout")
 	player.speak(G.rand_dialog("open_rebel"), 2, parent.position)
 	yield(get_tree().create_timer(3, false), "timeout")
-	show_hint("Hold left click to move", 3)
+	show_hint("Hold left click to move", 0)
 	player.start()
 
 func show_hint(text, duration, tint = Color.white):
+	if $GUI/HintLabel.modulate != Color.transparent:
+		hide_hint()
+		yield(get_tree().create_timer(0.3, false), "timeout")
 	$GUI/HintLabel.modulate = Color.transparent
 	$GUI/HintLabel.text = text
 	$Tween.stop_all()
 	$Tween.interpolate_property($GUI/HintLabel, "modulate", Color.transparent, tint, 1.0)
-	$Tween.interpolate_property($GUI/HintLabel, "modulate", tint, Color.transparent, 1.0, Tween.TRANS_LINEAR, Tween.EASE_IN, duration + 1)
+	if duration > 0:
+		$Tween.interpolate_property($GUI/HintLabel, "modulate", tint, Color.transparent, 1.0, Tween.TRANS_LINEAR, Tween.EASE_IN, duration + 1)
+	$Tween.start()
+	
+func hide_hint():
+	$Tween.stop_all()
+	$Tween.interpolate_property($GUI/HintLabel, "modulate", $GUI/HintLabel.modulate, Color.transparent, 0.3)
 	$Tween.start()
 
 func pause():
@@ -95,24 +109,27 @@ func pause():
 
 func _on_left_home():
 	Audio.play("depart", 0.3)
+	hide_hint()
 	G.player.speak(G.rand_dialog("open_depart"), 3, G.player.parent.position)
 	yield(get_tree().create_timer(1.5, false), "timeout")
 	for body in $SolarSystem.bodies:
 		if body.type == "belt":
 			body.indvis = true
 	yield(get_tree().create_timer(2.5, false), "timeout")
-	show_hint("Follow the arrow to the asteroid belt", 3)
 	G.player.show_health_bar()
+	if not G.first_system: return
+	show_hint("Follow the arrow to the asteroid belt", 0)
 
 func _on_enter_belt():
 	if not G.first_system: return
 	yield(get_tree().create_timer(1, false), "timeout")
-	show_hint("Press space bar to recruit", 3)
+	show_hint("Press space bar to recruit", 0)
 
 func _on_captured():
 	if not G.first_system: return
-	yield(get_tree().create_timer(2, false), "timeout")
-	show_hint("Go try to recruit a moon", 3)
+	hide_hint()
+	yield(get_tree().create_timer(2.5, false), "timeout")
+	show_hint("Go try to recruit a moon", 0)
 	var min_dist = 0
 	var min_index = 5
 	var bodies = $SolarSystem.bodies
@@ -126,24 +143,33 @@ func _on_captured():
 	
 func _on_rejection():
 	if not G.first_system: return
+	hide_hint()
 	yield(get_tree().create_timer(3, false), "timeout")
-	show_hint("Right click to launch an asteroid", 3)
+	show_hint("Right click to launch asteroids", 0)
 	
 func _on_planet_defeated():
 	if not G.first_system: return
+	hide_hint()
+	yield(get_tree().create_timer(2, false), "timeout")
+	show_hint("Collect the moon food", 0)
+	
+func _on_collected_food():
+	if not G.first_system: return
+	hide_hint()
 	yield(get_tree().create_timer(3, false), "timeout")
 	show_hint(G.rand_dialog("sun_question"), 3, Color.yellow)
 	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(4, false), "timeout")
 	G.player.speak(G.rand_dialog("sun_defense"), 2, Vector2.ZERO)
 	yield(get_tree().create_timer(4, false), "timeout")
-	show_hint("Go talk to the sun", 3)
+	show_hint("Go talk to the sun", 0)
 	for body in $SolarSystem.bodies:
 		if body.type == "star":
 			body.indvis = true
 	
 func _on_approached_sun():
 	if not G.first_system: return
+	hide_hint()
 	show_hint(G.rand_dialog("sun_ask_stop"), 3, Color.yellow)
 	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(3.5, false), "timeout")
@@ -162,6 +188,17 @@ func _on_approached_sun():
 	for body in $SolarSystem.bodies:
 		if body.type == "planet":
 			body.indvis = true
+
+func _on_death():
+	playing = false
+	G.player.speak(G.rand_dialog("death"), 3, G.player.position + Vector2.DOWN)
+	Audio.play("gameover")
+	$GUI/GameOverMenu/ScoreLabel.text = "Score: " + str(int(G.score))
+	$GUI/GameOverMenu.modulate = Color.transparent
+	$GUI/GameOverMenu.visible = true
+	$Tween.stop_all()
+	$Tween.interpolate_property($GUI/GameOverMenu, "modulate", Color.transparent, Color(1,1,1,0.7), 4, Tween.TRANS_CUBIC, Tween.EASE_IN)
+	$Tween.start()
 
 func _on_MousePointer_gui_input(event):
 	if event is InputEventMouseButton and event.pressed:
@@ -212,3 +249,6 @@ func _on_VolumeSlider_gui_input(event):
 	if event is InputEventMouseButton and not event.pressed and event.button_index == BUTTON_LEFT:
 		Audio.play("click")
 
+func _on_RestartButton_pressed():
+	G.score = 0
+	get_tree().reload_current_scene()

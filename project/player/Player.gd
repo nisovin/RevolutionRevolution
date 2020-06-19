@@ -4,6 +4,9 @@ signal left_home
 signal reached_belt
 signal captured_asteroid
 signal been_rejected
+signal collected_food
+signal leveled_up
+signal died
 
 enum State { MENU, START, ORBITING, FREE, TRAVELING, GAME_OVER }
 
@@ -31,6 +34,7 @@ var xp_for_next = 4
 var have_reached_belt = false
 var have_captured = false
 var have_been_rejected = false
+var have_collected_food = false
 
 onready var health_bar = $CanvasLayer/Bars/HealthBar
 onready var xp_bar = $CanvasLayer/Bars/XPBar
@@ -51,11 +55,24 @@ func speak(text, duration, target):
 func take_damage(amount, recoverable = false):
 	if invulnerable: return
 	health -= amount
+	if health <= 0:
+		state = State.GAME_OVER
+		emit_signal("died")
+		return
 	recover_cooldown = 5
 	if recovering > 0:
 		recovering *= 0.75
 	if recoverable:
 		recovering += amount
+
+func is_dead():
+	return state == State.GAME_OVER
+
+func collect_food(xp):
+	add_xp(xp)
+	if not have_collected_food:
+		have_collected_food = true
+		emit_signal("collected_food")
 
 func add_xp(amount):
 	Audio.play("collect")
@@ -69,6 +86,7 @@ func add_xp(amount):
 		
 func level_up():
 	size += 2
+	G.score += 25
 	Audio.play("levelup")
 	$Tween.interpolate_property($Planet, "modulate", Color.white, Color(2,2,2), 3, Tween.TRANS_QUAD, Tween.EASE_IN)
 	$Tween.interpolate_property($Planet, "modulate", Color(2,2,2), Color.white, 3, Tween.TRANS_QUAD, Tween.EASE_OUT, 3)
@@ -97,6 +115,8 @@ func _unhandled_input(event):
 		fire()
 	elif event.is_action_pressed("ui_page_up"):
 		level_up()
+	elif event.is_action_pressed("ui_page_down"):
+		take_damage(10)
 
 func recruit():
 	speak(G.rand_dialog("call_out"), 1.0, position + Vector2.DOWN * 100)
@@ -213,7 +233,7 @@ func _physics_process(delta):
 		position = parent.position + Vector2.RIGHT.rotated(angle) * 130
 
 func _integrate_forces(_state):
-	if state == State.START: return
+	if state == State.START or state == State.GAME_OVER: return
 	
 	if req_pos != null:
 		_state.transform.origin = req_pos

@@ -23,7 +23,7 @@ func _physics_process(delta):
 	shoot_cooldown -= delta
 
 func _on_Timer_timeout():
-	if shoot_cooldown <= 0 and G.player != null and G.player.position.distance_squared_to(position) < 500 * 500:
+	if shoot_cooldown <= 0 and G.player != null and not G.player.is_dead() and G.player.position.distance_squared_to(position) < 500 * 500:
 		shoot_cooldown = 2
 		var dir = position.direction_to(G.player.position + G.player.linear_velocity)
 		var theta = (PI / 2) / 6

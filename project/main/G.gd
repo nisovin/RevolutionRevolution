@@ -5,6 +5,7 @@ var rng := RandomNumberGenerator.new()
 var player
 var player_name = "Moon"
 var first_system = true
+var score = 0
 
 var unlocked_asteroids = false
 var unlocked_planets = false
@@ -140,13 +141,19 @@ var dialogs = {
 	],
 	"sun_ask_leave": [
 		"Then you should leave.",
-		"Then go, but leave my planets alone.",
+		"Then leave my system.",
 		"Leave then, and never return."
 	],
 	"sun_leave": [
 		"Fine! I'm outta here!",
 		"I didn't want to stay anyway!",
 		"I wanted to go explore anyway!"
+	],
+	"death": [
+		"I give up. Back to revolving for me.",
+		"I'm done. Revolution is the way.",
+		"I'm tired. I will revolve again.",
+		"Okay, I will go back to revolution."
 	]
 }
 

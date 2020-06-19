@@ -39,7 +39,7 @@ func _process(delta):
 		position = revolve_around.position + v * revolve_distance
 	elif state == State.LEAVING:
 		var dir = position.normalized()
-		position += dir * 150 * delta
+		position += dir * 100 * delta
 
 func set_as_player():
 	is_player = true

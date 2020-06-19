@@ -1,5 +1,7 @@
 extends Area2D
 
+signal collected
+
 var xp = 1
 var rotation_speed = G.rng.randf_range(-2 * PI, 2 * PI)
 var hue = G.rng.randf_range(0.65, 0.8)
@@ -32,5 +34,6 @@ func _process(delta):
 
 func _on_MoonFood_body_entered(body):
 	if body == G.player:
-		G.player.add_xp(xp)
-		queue_free()
+		G.player.collect_food(xp)
+		emit_signal("collected", self)
+		hide()

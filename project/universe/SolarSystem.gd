@@ -40,7 +40,7 @@ func _process(delta):
 	for b in bodies:
 		var ind = b.indicator
 		var body_pos
-		if b.type == "planet" or b.type == "star":
+		if b.type == "planet" or b.type == "star" or b.type == "food":
 			body_pos = b.body.position
 		elif b.type == "belt":
 			body_pos = player_pos.normalized().rotated(PI / 50) * belt
@@ -51,6 +51,7 @@ func _process(delta):
 			#else:
 			#	body_pos = player_pos.normalized().rotated(PI / 40) * b.distance
 		else:
+			ind.visible = false
 			continue
 		var dir = player_pos.direction_to(body_pos)
 		var dist = player_pos.distance_to(body_pos)
@@ -104,20 +105,35 @@ func _on_planet_defeated(planet):
 		var comet = Comet.instance()
 		$Spawns.add_child(comet)
 		
+	G.score += 5
 	var moons = planet.moons
 	planet.moons = []
 	for moon in moons:
 		moon.speak(G.rand_dialog("moon_thanks"), 1.5, G.player.position)
 		moon.free_moon()
-	yield(get_tree().create_timer(0.3, false), "timeout")
+	yield(get_tree().create_timer(0.1, false), "timeout")
 	for moon in moons:
+		G.score += 5
 		var food = MoonFood.instance()
 		food.hue = moon.base_color.h
 		food.position = moon.position
 		if first:
-			food.xp = 4
+			food.xp = 2
+		food.connect("collected", self, "_on_food_collected")
 		$Spawns.add_child(food)
+		var ind = PlanetIndicator.instance()
+		ind.type = "food"
+		ind.color = moon.base_color
+		$Indicators/I.add_child(ind)
+		bodies.append({"type": "food", "body": food, "indicator": ind, "indvis": true})
 		
+func _on_food_collected(food):
+	for body in bodies:
+		if body.type == "food" and body.body == food:
+			body.type = "old"
+			body.indvis = false
+			break
+	food.queue_free()
 
 func can_pause():
 	return state == State.NORMAL
@@ -307,8 +323,8 @@ func _on_Timer_timeout():
 	if star_attack_cooldown > 0: return
 	if last_attacked_planet == 0 or last_attacked_planet < OS.get_ticks_msec() - 15000: return
 	
-	star_attack_cooldown = 8
-	var theta = tan(50 / G.player.position.length())
+	star_attack_cooldown = 6
+	var theta = tan(200 / G.player.position.length())
 	var dir = G.player.position.normalized()
 	
 	var flare = SolarFlare.instance()
