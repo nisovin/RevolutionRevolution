@@ -12,6 +12,7 @@ const PlanetIndicator = preload("res://planets/PlanetIndicator.tscn")
 const Asteroid = preload("res://asteroids/Asteroid.tscn")
 const Comet = preload("res://universe/Comet.tscn")
 const SolarFlare = preload("res://universe/SolarFlare.tscn")
+const MoonFood = preload("res://universe/MoonFood.tscn")
 
 var state = State.START
 var bodies = []
@@ -89,16 +90,34 @@ func _physics_process(delta):
 			else:
 				prevent_leave_speak_cooldown -= delta
 
-func _on_planet_attacked():
+func _on_planet_attacked(planet, damage, health):
 	last_attacked_planet = OS.get_ticks_msec()
 
-func _on_planet_defeated():
+func _on_planet_defeated(planet):
+	var first = false
 	if not have_planet_fled:
 		have_planet_fled = true
+		first = true
 		call_deferred("emit_signal", "planet_defeated")
+	
 	if not G.first_system:
 		var comet = Comet.instance()
 		$Spawns.add_child(comet)
+		
+	var moons = planet.moons
+	planet.moons = []
+	for moon in moons:
+		moon.speak(G.rand_dialog("moon_thanks"), 1.5, G.player.position)
+		moon.free_moon()
+	yield(get_tree().create_timer(0.3, false), "timeout")
+	for moon in moons:
+		var food = MoonFood.instance()
+		food.hue = moon.base_color.h
+		food.position = moon.position
+		if first:
+			food.xp = 4
+		$Spawns.add_child(food)
+		
 
 func can_pause():
 	return state == State.NORMAL
@@ -203,7 +222,7 @@ func generate():
 		if G.first_system and i == 2: # home planet at position #2
 			planet.radius = 30
 			planet.base_color = Color.green
-			planet.generate("planet", i + 1)
+			planet.generate(i + 1)
 			home_planet = planet
 		else:
 			planet.generate_planet(i + 1)
@@ -286,9 +305,27 @@ func _on_Timer_timeout():
 	if star_attack_cooldown > 0:
 		star_attack_cooldown -= $Timer.wait_time
 	if star_attack_cooldown > 0: return
-	if last_attacked_planet < OS.get_ticks_msec() - 15000: return
+	if last_attacked_planet == 0 or last_attacked_planet < OS.get_ticks_msec() - 15000: return
+	
+	star_attack_cooldown = 8
+	var theta = tan(50 / G.player.position.length())
+	var dir = G.player.position.normalized()
+	
 	var flare = SolarFlare.instance()
-	flare.fire(G.player.position.normalized() * 400)
+	flare.fire(dir * 400)
 	$Spawns.add_child(flare)
 	Audio.play("sunattack", 0.5)
-	star_attack_cooldown = 8
+	yield(get_tree().create_timer(0.4, false), "timeout")
+	
+	flare = SolarFlare.instance()
+	flare.fire(dir.rotated(-theta) * 400)
+	$Spawns.add_child(flare)
+	Audio.play("sunattack", 0.5)
+	yield(get_tree().create_timer(0.4, false), "timeout")
+	
+	flare = SolarFlare.instance()
+	flare.fire(dir.rotated(theta) * 400)
+	$Spawns.add_child(flare)
+	Audio.play("sunattack", 0.5)
+	
+	

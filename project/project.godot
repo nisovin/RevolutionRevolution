@@ -28,6 +28,7 @@ Audio="*res://main/Audio.gd"
 
 gdscript/warnings/unused_argument=false
 gdscript/warnings/unused_signal=false
+gdscript/warnings/return_value_discarded=false
 gdscript/warnings/integer_division=false
 
 [display]
@@ -87,6 +88,7 @@ capture={
 2d_physics/layer_2="planet"
 2d_physics/layer_3="asteroid"
 2d_physics/layer_4="projectile"
+2d_physics/layer_5="food"
 
 [physics]
 

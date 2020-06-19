@@ -21,6 +21,8 @@ func _ready():
 	register("comethit", preload("res://sounds/comet_hit.ogg"))
 	register("sunattack", preload("res://sounds/fireattack.wav"))
 	register("sunhit", preload("res://sounds/firehit.ogg"))
+	register("collect", preload("res://sounds/collect.wav"))
+	register("levelup", preload("res://sounds/levelup.ogg"))
 
 	for i in 3:
 		register("thwack", load("res://sounds/thwack-0" + str(i+1) + ".ogg"))

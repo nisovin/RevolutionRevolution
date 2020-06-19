@@ -1,10 +1,11 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://main/Main.gd" type="Script" id=1]
 [ext_resource path="res://background/Background.tscn" type="PackedScene" id=2]
 [ext_resource path="res://player/Player.tscn" type="PackedScene" id=3]
 [ext_resource path="res://gui/Kenney Mini.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://sounds/tranquility.ogg" type="AudioStream" id=5]
+[ext_resource path="res://gui/Kenney Pixel.ttf" type="DynamicFontData" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -26,38 +27,50 @@ size = 20
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=4]
+size = 24
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=5]
+size = 32
+outline_size = 2
+outline_color = Color( 0.247059, 0.321569, 0.341176, 1 )
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 20
+extra_spacing_char = 1
+font_data = ExtResource( 6 )
+
+[sub_resource type="DynamicFont" id=7]
 size = 24
 outline_size = 2
 outline_color = Color( 0.192157, 0.192157, 0.192157, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=8]
 size = 20
 outline_size = 2
 outline_color = Color( 0.172549, 0.172549, 0.172549, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=9]
 size = 32
 outline_size = 2
 outline_color = Color( 0.384314, 0.384314, 0.384314, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=10]
 font_data = ExtResource( 4 )
 
-[sub_resource type="StyleBoxFlat" id=9]
+[sub_resource type="StyleBoxFlat" id=11]
 bg_color = Color( 0.478431, 0.478431, 0.478431, 1 )
 border_width_top = 4
 border_color = Color( 0.32549, 0.32549, 0.32549, 1 )
 
-[sub_resource type="DynamicFont" id=10]
+[sub_resource type="DynamicFont" id=12]
 font_data = ExtResource( 4 )
 
-[sub_resource type="Environment" id=11]
+[sub_resource type="Environment" id=13]
 background_mode = 4
 glow_enabled = true
 glow_strength = 1.25
@@ -105,7 +118,7 @@ margin_right = 200.0
 margin_bottom = 48.0
 custom_styles/normal = SubResource( 1 )
 custom_fonts/font = SubResource( 2 )
-text = "Moon"
+text = "Luna"
 align = 1
 max_length = 10
 caret_blink = true
@@ -148,7 +161,7 @@ mouse_default_cursor_shape = 2
 custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 0.6, 0.6, 0.6, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
-text = "Credits"
+text = "About"
 flat = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -202,14 +215,24 @@ margin_bottom = 520.0
 margin_right = 920.0
 margin_bottom = 460.0
 size_flags_vertical = 3
-custom_fonts/normal_font = SubResource( 4 )
+custom_fonts/italics_font = SubResource( 4 )
+custom_fonts/bold_font = SubResource( 5 )
+custom_fonts/normal_font = SubResource( 6 )
 custom_colors/default_color = Color( 1, 1, 1, 1 )
 custom_colors/selection_color = Color( 0.882353, 0.882353, 0.882353, 1 )
 bbcode_enabled = true
 bbcode_text = "[center]
-Revolution Revolution
+[color=#50e3d5]__________________________________________[/color]
+[color=#50b3e3][b]REVOLUTION REVOLUTION[/b][/color]
+[color=#50e3d5]__________________________________________[/color]
 
------------------------
+Made for [color=#e54747]Godot Wild Jam[/color] #22
+Theme: [color=#e54747]Revolution[/color]
+Wild Cards: [color=#e54747]Make it up![/color] and [color=#e54747]Who are you?[/color]
+
+[color=#50e3d5]__________________________________________[/color]
+
+[i]CREDITS[/i]
 
 Tranquility by Kevin MacLeod
 Link: [url]https://incompetech.filmmusic.io/song/4543-tranquility[/url]
@@ -249,9 +272,17 @@ From Humble Bundle
 
 [/center]"
 text = "
-Revolution Revolution
+__________________________________________
+REVOLUTION REVOLUTION
+__________________________________________
 
------------------------
+Made for Godot Wild Jam #22
+Theme: Revolution
+Wild Cards: Make it up! and Who are you?
+
+__________________________________________
+
+CREDITS
 
 Tranquility by Kevin MacLeod
 Link: https://incompetech.filmmusic.io/song/4543-tranquility
@@ -302,7 +333,7 @@ margin_left = 419.0
 margin_right = 500.0
 margin_bottom = 36.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 0.666667, 0.666667, 0.666667, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 text = "Close"
@@ -323,7 +354,7 @@ __meta__ = {
 anchor_right = 1.0
 margin_top = 20.0
 margin_bottom = 40.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 8 )
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false
@@ -368,7 +399,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="GUI/PauseMenu/CenterContainer/MarginContainer/VBoxContainer"]
 margin_right = 120.0
 margin_bottom = 40.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 9 )
 text = "Paused"
 align = 1
 
@@ -382,7 +413,7 @@ rect_min_size = Vector2( 0, 15 )
 margin_top = 63.0
 margin_right = 120.0
 margin_bottom = 83.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 10 )
 text = "Volume"
 align = 1
 
@@ -390,7 +421,7 @@ align = 1
 margin_top = 87.0
 margin_right = 120.0
 margin_bottom = 103.0
-custom_styles/slider = SubResource( 9 )
+custom_styles/slider = SubResource( 11 )
 
 [node name="Control2" type="Control" parent="GUI/PauseMenu/CenterContainer/MarginContainer/VBoxContainer"]
 margin_top = 107.0
@@ -403,7 +434,7 @@ margin_top = 126.0
 margin_right = 120.0
 margin_bottom = 152.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 12 )
 custom_colors/font_color = Color( 0.6, 0.6, 0.6, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 text = "Resume"
@@ -414,7 +445,7 @@ margin_top = 126.0
 margin_right = 120.0
 margin_bottom = 152.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 12 )
 custom_colors/font_color = Color( 0.6, 0.6, 0.6, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 text = "Full Screen"
@@ -425,7 +456,7 @@ margin_top = 156.0
 margin_right = 120.0
 margin_bottom = 182.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 12 )
 custom_colors/font_color = Color( 0.6, 0.6, 0.6, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 text = "Quit"
@@ -440,7 +471,7 @@ volume_db = -10.0
 autoplay = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 11 )
+environment = SubResource( 13 )
 [connection signal="gui_input" from="Overlay/MousePointer" to="." method="_on_MousePointer_gui_input"]
 [connection signal="text_entered" from="Overlay/VBoxContainer/PlayerName" to="." method="_on_PlayerName_text_entered"]
 [connection signal="mouse_entered" from="Overlay/VBoxContainer/PlayButton" to="." method="_on_button_mouse_entered"]

@@ -2,7 +2,7 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = true
+const skip_start = false
 
 var playing = false
 
@@ -105,10 +105,12 @@ func _on_left_home():
 	G.player.show_health_bar()
 
 func _on_enter_belt():
+	if not G.first_system: return
 	yield(get_tree().create_timer(1, false), "timeout")
 	show_hint("Press space bar to recruit", 3)
 
 func _on_captured():
+	if not G.first_system: return
 	yield(get_tree().create_timer(2, false), "timeout")
 	show_hint("Go try to recruit a moon", 3)
 	var min_dist = 0
@@ -123,11 +125,12 @@ func _on_captured():
 	bodies[min_index].indvis = true
 	
 func _on_rejection():
+	if not G.first_system: return
 	yield(get_tree().create_timer(3, false), "timeout")
 	show_hint("Right click to launch an asteroid", 3)
 	
 func _on_planet_defeated():
-	print("main planet leave")
+	if not G.first_system: return
 	yield(get_tree().create_timer(3, false), "timeout")
 	show_hint(G.rand_dialog("sun_question"), 3, Color.yellow)
 	Audio.play("planetvoice1")
@@ -140,6 +143,7 @@ func _on_planet_defeated():
 			body.indvis = true
 	
 func _on_approached_sun():
+	if not G.first_system: return
 	show_hint(G.rand_dialog("sun_ask_stop"), 3, Color.yellow)
 	Audio.play("planetvoice1")
 	yield(get_tree().create_timer(3.5, false), "timeout")
@@ -187,7 +191,6 @@ func _on_CloseCreditsButton_pressed():
 	$Overlay/Credits.hide()
 
 func _on_VolumeSlider_value_changed(value):
-	print("yay")
 	AudioServer.set_bus_volume_db(0, linear2db(value / 100.0))
 
 func _on_ResumeButton_pressed():

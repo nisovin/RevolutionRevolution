@@ -9,8 +9,8 @@ var state = State.REVOLVING
 var revolve_around = null
 var revolve_speed = 1
 var revolve_distance = 10
+var defeated = false
 var captured_by = null
-var leave_vector = null
 
 var type = "planet"
 var health = 20
@@ -27,7 +27,6 @@ var data = null
 func _ready():
 	if revolve_around != null:
 		revolve_distance = position.distance_to(revolve_around.position)
-		print(self, $NameLabel.text, " ", revolve_around, " ", revolve_distance)
 #	radius = 20
 #	base_color = Color.blue
 #	generate_planet(1, false)
@@ -40,7 +39,7 @@ func _process(delta):
 		position = revolve_around.position + v * revolve_distance
 	elif state == State.LEAVING:
 		var dir = position.normalized()
-		position += dir * 300 * delta
+		position += dir * 150 * delta
 
 func set_as_player():
 	is_player = true
@@ -65,15 +64,19 @@ func speak(text, duration, target):
 		Audio.play("planetvoice" + str(voice))
 
 func take_damage(amount):
-	if state != State.REVOLVING: return
+	if state != State.REVOLVING or defeated: return
 	health -= amount
 	if health > 0:
 		speak(G.rand_dialog("take_damage"), 1.5, G.player.position)
-		emit_signal("attacked")
+		emit_signal("attacked", self, amount, health)
 	else:
 		speak(G.rand_dialog("fed_up"), 2.0, G.player.position)
-		state = State.LEAVING
-		emit_signal("defeated")
+		defeated = true
+		#state = State.LEAVING
+		emit_signal("defeated", self)
+		
+func free_moon():
+	state = State.LEAVING
 
 func generate_star():
 	type = "star"
@@ -220,7 +223,7 @@ func generate(index):
 		$Sprite.material = null
 
 	# set dialog color
-	if type == "planet":
+	if type == "planet" or type == "moon":
 		$Dialog/Text.set("custom_colors/font_color", base_color.lightened(0.8))
 		$Dialog/Text.set("custom_colors/font_color_shadow", base_color.darkened(0.6))
 

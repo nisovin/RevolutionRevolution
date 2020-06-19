@@ -1,9 +1,21 @@
+[center]
+[color=#50e3d5]__________________________________________[/color]
+[color=#50b3e3][b]REVOLUTION REVOLUTION[/b][/color]
+[color=#50e3d5]__________________________________________[/color]
+
+Made for [color=#e54747]Godot Wild Jam[/color] #22
+Theme: [color=#e54747]Revolution[/color]
+Wild Cards: [color=#e54747]Make it up![/color] and [color=#e54747]Who are you?[/color]
+
+[color=#50e3d5]__________________________________________[/color]
+
+[i]CREDITS[/i]
 
 Tranquility by Kevin MacLeod
 Link: [url]https://incompetech.filmmusic.io/song/4543-tranquility[/url]
 License: [url]http://creativecommons.org/licenses/by/4.0/[/url]
 
-Kenney Mini font
+Kenney Mini/Pixel fonts
 Link: [url]https://kenney.nl/assets/kenney-fonts[/url]
 License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
 
@@ -34,3 +46,5 @@ License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
 Interface SFX
 Link: [url]https://www.gamedevmarket.net/asset/interface-sfx-9059/[/url]
 From Humble Bundle
+
+[/center]

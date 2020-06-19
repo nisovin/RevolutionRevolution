@@ -26,8 +26,7 @@ func generate():
 	var mid = origin + Vector2.RIGHT * (radius + width + width)
 	var botmid = origin + Vector2.RIGHT.rotated(arc/2) * (radius + width)
 	var bot = origin + Vector2.RIGHT.rotated(arc) * (radius + width)
-	var points = [top * 2, topmid * 2, mid, botmid * 2, bot * 2]
-	$CollisionShape2D.shape.points = points
+	$CollisionShape2D.shape.points = [top * 2, topmid * 2, mid, botmid * 2, bot * 2]
 	
 	var ppoints = []
 	var pcolors = []
@@ -42,7 +41,6 @@ func generate():
 	ppoints.append(p * 2)
 	pcolors.append(Color.orange)
 	$Particles.emission_points = PoolVector2Array(ppoints)
-	print(ppoints)
 	#$Particles.emission_colors = PoolColorArray(pcolors)
 #
 #	for p in ppoints:

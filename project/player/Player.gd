@@ -25,10 +25,16 @@ var health = 0.0
 var recovering = 0
 var recover_cooldown = 0
 var invulnerable = true
+var xp = 0
+var xp_for_next = 4
 
 var have_reached_belt = false
 var have_captured = false
 var have_been_rejected = false
+
+onready var health_bar = $CanvasLayer/Bars/HealthBar
+onready var xp_bar = $CanvasLayer/Bars/XPBar
+onready var xp_tween = $CanvasLayer/Bars/XPBar/Tween
 
 func _ready():
 	G.player = self
@@ -51,6 +57,38 @@ func take_damage(amount, recoverable = false):
 	if recoverable:
 		recovering += amount
 
+func add_xp(amount):
+	Audio.play("collect")
+	xp += amount
+	xp_tween.stop_all()
+	xp_tween.interpolate_property(xp_bar, "value", xp_bar.value, xp, 0.5)
+	xp_tween.start()
+	if xp >= xp_for_next:
+		yield(get_tree().create_timer(0.5, false), "timeout")
+		level_up()
+		
+func level_up():
+	size += 2
+	Audio.play("levelup")
+	$Tween.interpolate_property($Planet, "modulate", Color.white, Color(2,2,2), 3, Tween.TRANS_QUAD, Tween.EASE_IN)
+	$Tween.interpolate_property($Planet, "modulate", Color(2,2,2), Color.white, 3, Tween.TRANS_QUAD, Tween.EASE_OUT, 3)
+	$Tween.start()
+	yield(get_tree().create_timer(3, false), "timeout")
+	$Planet.radius = size
+	$Planet.generate(1)
+	$CollisionShape2D.shape.radius = size * 2
+	$Particles.emission_sphere_radius = size
+	mass = size
+	
+	xp = 0
+	xp_for_next = size / 2
+	xp_bar.max_value = xp_for_next
+	xp_bar.value = 0
+	xp_tween.stop_all()
+	xp_tween.interpolate_property(xp_bar, "value", xp_bar.value, 0, 0.2)
+	xp_tween.start()
+	
+
 func _unhandled_input(event):
 	if state != State.FREE: return
 	if event.is_action_pressed("capture"):
@@ -58,11 +96,7 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("fire"):
 		fire()
 	elif event.is_action_pressed("ui_page_up"):
-		size += 1
-		$Planet.radius = size
-		$Planet.generate_planet(1)
-		$CollisionShape2D.shape.radius = size * 2
-		mass = size
+		level_up()
 
 func recruit():
 	speak(G.rand_dialog("call_out"), 1.0, position + Vector2.DOWN * 100)
@@ -76,14 +110,16 @@ func recruit():
 						have_captured = true
 						call_deferred("emit_signal", "captured_asteroid")
 		elif body.is_in_group("planets"):
-			if body.type == "moon":
-				pass # TODO
-			yield(get_tree().create_timer(1), "timeout")
-			body.get_parent().speak(G.rand_dialog("rejection"), 1.5, position)
-			if not have_been_rejected:
-				have_been_rejected = true
-				body.get_parent().health = 10
-				call_deferred("emit_signal", "been_rejected")
+			var planet = body.owner
+			if planet.type == "planet":
+				yield(get_tree().create_timer(1), "timeout")
+				planet.speak(G.rand_dialog("planet_deny", {"s": "" if planet.moons.size() == 1 else "s"}), 1.5, position)
+				for moon in planet.moons:
+					moon.speak(G.rand_dialog("moon_help"), 1.5, position)
+				if not have_been_rejected:
+					have_been_rejected = true
+					planet.health = 10
+					call_deferred("emit_signal", "been_rejected")
 	update_asteroid_label()
 
 func fire():
@@ -113,10 +149,10 @@ func start():
 	state = State.ORBITING
 
 func show_health_bar():
-	var bar = $CanvasLayer/HealthBar
-	bar.modulate = Color.transparent
-	bar.visible = true
-	$Tween.interpolate_property(bar, "modulate", Color.transparent, Color.white, 1.5)
+	var bars = $CanvasLayer/Bars
+	bars.modulate = Color.transparent
+	bars.visible = true
+	$Tween.interpolate_property(bars, "modulate", Color.transparent, Color.white, 1.5)
 	$Tween.interpolate_property(self, "health", 0.0, 100.0, 2.5, Tween.TRANS_QUAD, Tween.EASE_IN, 0.5)
 	$Tween.start()
 	yield(get_tree().create_timer(2.5), "timeout")
@@ -167,7 +203,7 @@ func _process(delta):
 			health += amt
 			if health > 100:
 				health = 100
-		$CanvasLayer/HealthBar.value = health
+		health_bar.value = health
 		
 
 func _physics_process(delta):
@@ -225,7 +261,7 @@ func cycle_color():
 		if h < 0.33: h += 0.33
 		$Planet.base_color.h = h
 		$Planet.data = null
-		$Planet.generate("planet", 1, true)
+		$Planet.generate(1)
 		$Particles.color = $Planet.base_color
 
 

@@ -78,7 +78,11 @@ var dialogs = {
 		"You cannot free my moon{s}."
 	],
 	"moon_help": [
-		
+		"Help me!",
+		"Free me!",
+		"I don't want to revolve!",
+		"Let me go!",
+		"Let me free!"
 	],
 	"rejection": [
 		"No!",
@@ -99,9 +103,18 @@ var dialogs = {
 		"Agh!"
 	],
 	"fed_up": [
-		"Fine! I'm outta here!",
-		"So annoying! I'm leaving!",
-		"Ugh, I'm done with this!"
+		"Fine! Leave me!",
+		"So annoying! Just go!",
+		"Ugh, fine!"
+	],
+	"moon_thanks": [
+		"Thank you!",
+		"Thanks!",
+		"Yippee!",
+		"Woohoo!",
+		"I'm free!",
+		"No revolving for me!",
+		"No more revolution!"
 	],
 	"sun_question": [
 		"{player}, what are you doing?",
@@ -147,8 +160,13 @@ var system_suffixes = ["A", "B", "C", "G", "J", "K", "Q", "V", "X", "Z"]
 func _ready():
 	rng.randomize()
 
-func rand_dialog(key):
-	return rand_array(dialogs[key]).replace("{player}", G.player_name)
+func rand_dialog(key, replacements = null):
+	var d = rand_array(dialogs[key])
+	d = d.replace("{player}", G.player_name)
+	if replacements != null:
+		for r in replacements:
+			d = d.replace("{" + r + "}", replacements[r])
+	return d
 
 func rand_planet_name():
 	return rand_array(planet_prefixes) + rand_array(planet_infixes) + rand_array(planet_suffixes)
