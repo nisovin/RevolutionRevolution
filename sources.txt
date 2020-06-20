@@ -19,19 +19,23 @@ License: [url=http://creativecommons.org/licenses/by/4.0/]CC-BY-4.0[/url]
 
 [color=#50e3d5]*** Sound Effects ***[/color]
 
-50 CC0 Tetro Synth SFX
+50 CC0 Retro Synth SFX - by rubberduck
 [url=https://opengameart.org/content/50-cc0-retro-synth-sfx]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
+80 CC0 RPG SFX - by rubberduck
+[url=https://opengameart.org/content/80-cc0-rpg-sfx]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
+
 4 Projectile Launches - by Michel Baradari apollo-music.de
-Link: [url]https://opengameart.org/content/4-projectile-launches[/url]
+[url=https://opengameart.org/content/4-projectile-launches]Link[/url]
 License: [url=http://creativecommons.org/licenses/by/3.0/]CC-BY-3.0[/url]
 
 Kenney Audio
-[url=https://kenney.nl/assets/ui-audio]Link (UI Audio)[/url] [url=https://kenney.nl/assets/digital-audio]Link (Digital Audio)[/url]
+[url=https://kenney.nl/assets/ui-audio]Link (UI Audio)[/url] * [url=https://kenney.nl/assets/digital-audio]Link (Digital Audio)[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
-Background Loop
+Background Loop - by Leszek_Szary
 [url=https://freesound.org/people/Leszek_Szary/sounds/368730/]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
@@ -39,14 +43,12 @@ Thwack Sounds - by Jordan Irwin (AntumDeluge)
 [url=https://opengameart.org/content/thwack-sounds]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
+Spell 4 (Fire) - by Bart K.
+[url=https://opengameart.org/content/spell-4-fire]Link[/url]
+License: [url=http://creativecommons.org/licenses/by/3.0/]CC-BY-3.0[/url]
+
 Some sound effects by Eric Matyas
 [url=https://www.soundimage.org]Link[/url]
-
-Interface SFX
-[url=https://www.gamedevmarket.net/asset/interface-sfx-9059/]Link[/url]
-
-Elemental Magic Sound Effects
-[url=https://www.gamedevmarket.net/asset/elemental-magic-sound-effects-library-vol-1-fire-water-wind-air-earth-wood-fantasy-spells/]Link[/url]
 
 [color=#50e3d5]*** Font ***[/color]
 

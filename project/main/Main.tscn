@@ -70,23 +70,23 @@ border_color = Color( 0.32549, 0.32549, 0.32549, 1 )
 [sub_resource type="DynamicFont" id=12]
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=14]
+[sub_resource type="DynamicFont" id=13]
 size = 48
 outline_size = 5
 outline_color = Color( 0.435294, 0.545098, 0.615686, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=15]
+[sub_resource type="DynamicFont" id=14]
 size = 32
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=16]
+[sub_resource type="DynamicFont" id=15]
 size = 24
 outline_size = 2
 outline_color = Color( 0.2, 0.2, 0.2, 1 )
 font_data = ExtResource( 4 )
 
-[sub_resource type="Environment" id=13]
+[sub_resource type="Environment" id=16]
 background_mode = 4
 glow_enabled = true
 glow_strength = 1.25
@@ -258,19 +258,23 @@ License: [url=http://creativecommons.org/licenses/by/4.0/]CC-BY-4.0[/url]
 
 [color=#50e3d5]*** Sound Effects ***[/color]
 
-50 CC0 Tetro Synth SFX
+50 CC0 Retro Synth SFX - by rubberduck
 [url=https://opengameart.org/content/50-cc0-retro-synth-sfx]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
+80 CC0 RPG SFX - by rubberduck
+[url=https://opengameart.org/content/80-cc0-rpg-sfx]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
+
 4 Projectile Launches - by Michel Baradari apollo-music.de
-Link: [url]https://opengameart.org/content/4-projectile-launches[/url]
+[url=https://opengameart.org/content/4-projectile-launches]Link[/url]
 License: [url=http://creativecommons.org/licenses/by/3.0/]CC-BY-3.0[/url]
 
 Kenney Audio
-[url=https://kenney.nl/assets/ui-audio]Link (UI Audio)[/url] [url=https://kenney.nl/assets/digital-audio]Link (Digital Audio)[/url]
+[url=https://kenney.nl/assets/ui-audio]Link (UI Audio)[/url] * [url=https://kenney.nl/assets/digital-audio]Link (Digital Audio)[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
-Background Loop
+Background Loop - by Leszek_Szary
 [url=https://freesound.org/people/Leszek_Szary/sounds/368730/]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
@@ -278,14 +282,12 @@ Thwack Sounds - by Jordan Irwin (AntumDeluge)
 [url=https://opengameart.org/content/thwack-sounds]Link[/url]
 License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
+Spell 4 (Fire) - by Bart K.
+[url=https://opengameart.org/content/spell-4-fire]Link[/url]
+License: [url=http://creativecommons.org/licenses/by/3.0/]CC-BY-3.0[/url]
+
 Some sound effects by Eric Matyas
 [url=https://www.soundimage.org]Link[/url]
-
-Interface SFX
-[url=https://www.gamedevmarket.net/asset/interface-sfx-9059/]Link[/url]
-
-Elemental Magic Sound Effects
-[url=https://www.gamedevmarket.net/asset/elemental-magic-sound-effects-library-vol-1-fire-water-wind-air-earth-wood-fantasy-spells/]Link[/url]
 
 [color=#50e3d5]*** Font ***[/color]
 
@@ -315,19 +317,23 @@ License: CC-BY-4.0
 
 *** Sound Effects ***
 
-50 CC0 Tetro Synth SFX
+50 CC0 Retro Synth SFX - by rubberduck
+Link
+License: CC0
+
+80 CC0 RPG SFX - by rubberduck
 Link
 License: CC0
 
 4 Projectile Launches - by Michel Baradari apollo-music.de
-Link: https://opengameart.org/content/4-projectile-launches
+Link
 License: CC-BY-3.0
 
 Kenney Audio
-Link (UI Audio) Link (Digital Audio)
+Link (UI Audio) * Link (Digital Audio)
 License: CC0
 
-Background Loop
+Background Loop - by Leszek_Szary
 Link
 License: CC0
 
@@ -335,13 +341,11 @@ Thwack Sounds - by Jordan Irwin (AntumDeluge)
 Link
 License: CC0
 
+Spell 4 (Fire) - by Bart K.
+Link
+License: CC-BY-3.0
+
 Some sound effects by Eric Matyas
-Link
-
-Interface SFX
-Link
-
-Elemental Magic Sound Effects
 Link
 
 *** Font ***
@@ -507,7 +511,7 @@ anchor_right = 1.0
 anchor_bottom = 0.3
 margin_top = -7.0
 margin_bottom = 7.0
-custom_fonts/font = SubResource( 14 )
+custom_fonts/font = SubResource( 13 )
 text = "GAME OVER"
 align = 1
 __meta__ = {
@@ -520,7 +524,7 @@ anchor_right = 1.0
 anchor_bottom = 0.5
 margin_top = -7.0
 margin_bottom = 7.0
-custom_fonts/font = SubResource( 15 )
+custom_fonts/font = SubResource( 14 )
 text = "Score: 0"
 align = 1
 __meta__ = {
@@ -537,7 +541,7 @@ margin_top = -20.0
 margin_right = 100.0
 margin_bottom = 20.0
 mouse_default_cursor_shape = 2
-custom_fonts/font = SubResource( 16 )
+custom_fonts/font = SubResource( 15 )
 custom_colors/font_color = Color( 0.6, 0.6, 0.6, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 text = "Back to Menu"
@@ -552,7 +556,7 @@ volume_db = -10.0
 autoplay = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 13 )
+environment = SubResource( 16 )
 [connection signal="gui_input" from="Overlay/MousePointer" to="." method="_on_MousePointer_gui_input"]
 [connection signal="text_entered" from="Overlay/VBoxContainer/PlayerName" to="." method="_on_PlayerName_text_entered"]
 [connection signal="mouse_entered" from="Overlay/VBoxContainer/PlayButton" to="." method="_on_button_mouse_entered"]

@@ -2,12 +2,12 @@
 
 importer="wav"
 type="AudioStreamSample"
-path="res://.import/fireattack.wav-b9fd3b101e4680d3c60a721f04a09062.sample"
+path="res://.import/foom_bartk.wav-3ff95db823bcc286b4c60832d264f3b1.sample"
 
 [deps]
 
-source_file="res://sounds/fireattack.wav"
-dest_files=[ "res://.import/fireattack.wav-b9fd3b101e4680d3c60a721f04a09062.sample" ]
+source_file="res://sounds/foom_bartk.wav"
+dest_files=[ "res://.import/foom_bartk.wav-3ff95db823bcc286b4c60832d264f3b1.sample" ]
 
 [params]
 
