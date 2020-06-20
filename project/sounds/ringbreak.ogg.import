@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/ringbreak.ogg-0163f0bec8f422ac1b3316f122c8c95b.oggstr"
+
+[deps]
+
+source_file="res://sounds/ringbreak.ogg"
+dest_files=[ "res://.import/ringbreak.ogg-0163f0bec8f422ac1b3316f122c8c95b.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

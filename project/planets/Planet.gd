@@ -2,6 +2,8 @@ extends Node2D
 
 enum State { REVOLVING, LEAVING }
 
+const PlanetRing = preload("res://planets/PlanetRing.tscn")
+
 signal attacked
 signal defeated
 
@@ -60,6 +62,8 @@ func speak(text, duration, target):
 	$Tween.start()
 	if is_player:
 		Audio.play("playervoice")
+	elif type == "moon":
+		Audio.play("asteroidvoice")
 	else:
 		Audio.play("planetvoice" + str(voice))
 
@@ -132,6 +136,7 @@ func generate(index):
 		
 	# size
 	diameter = radius * 2 + 1
+	health = radius
 	moon_radius = radius * 5
 	var rad_sq = (radius + 0.0) * (radius + 0.0)
 	var center = Vector2(radius + 0.5, radius + 0.5)
@@ -229,24 +234,26 @@ func generate(index):
 
 	# add planet rings
 	if type == "planet" and not is_player and not G.first_system:
-		has_rings = radius > 30 and index >= 3 and G.rng.randf() < 0.3
+		has_rings = index >= 3 and G.rng.randf() < 0.99 # TODO change
 		if has_rings:
 			data.rings = []
-			var rr = radius * 2 + G.rng.randf_range(radius * 1.5, radius * 2)
+			var rr = radius * 2 + 30 + G.rng.randf_range(radius * 1.5, radius * 2)
 			for x in G.rng.randi_range(1, 3):
-				data.rings.append({"radius": rr, "width": G.rng.randi_range(8, 15)})
-			update()
-
-func _draw():
-	if has_rings:
-		var rr = radius * 2 + G.rng.randf_range(radius * 0.5, radius * 1)
-		var color = Color.from_hsv(G.rng.randf_range(0, 1), G.rng.randf_range(0.25, 0.5), 1, 0.5)
-		for x in G.rng.randi_range(1, 3):
-			rr += G.rng.randf_range(radius * 0.25, radius * 0.5)
-			color.h += G.rng.randf_range(-0.2, 0.2)
-			for i in G.rng.randi_range(12, 20):
-				color.h += G.rng.randf_range(-0.05, 0.05)
-				draw_arc(Vector2.ZERO, rr, 0, 2 * PI, radius * PI, color, 1.3)
-				rr += G.rng.randf_range(1.5, 3)
-		$StaticBody2D/CollisionShape2D.shape.radius = rr
-			
+				var ring = PlanetRing.instance()
+				ring.radius = rr
+				add_child(ring)
+				rr += 50 + G.rng.randf_range(0, 15)
+#
+#func _draw():
+#	if has_rings:
+#		var rr = radius * 2 + G.rng.randf_range(radius * 0.5, radius * 1)
+#		var color = Color.from_hsv(G.rng.randf_range(0, 1), G.rng.randf_range(0.25, 0.5), 1, 0.5)
+#		for x in G.rng.randi_range(1, 3):
+#			rr += G.rng.randf_range(radius * 0.25, radius * 0.5)
+#			color.h += G.rng.randf_range(-0.2, 0.2)
+#			for i in G.rng.randi_range(12, 20):
+#				color.h += G.rng.randf_range(-0.05, 0.05)
+#				draw_arc(Vector2.ZERO, rr, 0, 2 * PI, radius * PI, color, 1.3)
+#				rr += G.rng.randf_range(1.5, 3)
+#		$StaticBody2D/CollisionShape2D.shape.radius = rr
+#

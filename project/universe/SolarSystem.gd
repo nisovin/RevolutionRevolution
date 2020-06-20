@@ -77,7 +77,7 @@ func _process(delta):
 		
 func _physics_process(delta):
 	if state == State.NORMAL and G.player.position.length_squared() > radius * radius:
-		if have_approached_sun:
+		if have_approached_sun and not G.player.is_dead():
 			goto_new_system()
 		else:
 			if prevent_leave_cooldown <= 0:
@@ -321,7 +321,7 @@ func _on_Timer_timeout():
 	if star_attack_cooldown > 0:
 		star_attack_cooldown -= $Timer.wait_time
 	if star_attack_cooldown > 0: return
-	if last_attacked_planet == 0 or last_attacked_planet < OS.get_ticks_msec() - 15000: return
+	if last_attacked_planet == 0 or last_attacked_planet < OS.get_ticks_msec() - 10000: return
 	
 	star_attack_cooldown = 6
 	var theta = tan(200 / G.player.position.length())

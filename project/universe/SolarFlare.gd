@@ -53,7 +53,6 @@ func generate():
 	
 
 func _on_SolarFlare_body_entered(body):
-	print("flare damage!")
 	body.take_damage(damage)
 	Audio.play("sunhit")
 

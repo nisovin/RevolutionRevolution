@@ -23,6 +23,7 @@ func _ready():
 	register("sunhit", preload("res://sounds/firehit.ogg"))
 	register("collect", preload("res://sounds/collect.wav"))
 	register("levelup", preload("res://sounds/levelup.ogg"))
+	register("ringbreak", preload("res://sounds/ringbreak.ogg"))
 	register("gameover", preload("res://sounds/gameover.ogg"))
 
 	for i in 3:

@@ -1,50 +1,57 @@
 [center]
-[color=#50e3d5]__________________________________________[/color]
+[color=#50e3d5]------------------------------------------------[/color]
 [color=#50b3e3][b]REVOLUTION REVOLUTION[/b][/color]
-[color=#50e3d5]__________________________________________[/color]
+[color=#50e3d5]------------------------------------------------[/color]
 
 Made for [color=#e54747]Godot Wild Jam[/color] #22
 Theme: [color=#e54747]Revolution[/color]
 Wild Cards: [color=#e54747]Make it up![/color] and [color=#e54747]Who are you?[/color]
 
-[color=#50e3d5]__________________________________________[/color]
+[color=#50e3d5]------------------------------------------------[/color]
 
-[i]CREDITS[/i]
+[color=#50b3e3][i]CREDITS[/i][/color]
+
+[color=#50e3d5]*** Music ***[/color]
 
 Tranquility by Kevin MacLeod
-Link: [url]https://incompetech.filmmusic.io/song/4543-tranquility[/url]
-License: [url]http://creativecommons.org/licenses/by/4.0/[/url]
+[url=https://incompetech.filmmusic.io/song/4543-tranquility]Link[/url]
+License: [url=http://creativecommons.org/licenses/by/4.0/]CC-BY-4.0[/url]
 
-Kenney Mini/Pixel fonts
-Link: [url]https://kenney.nl/assets/kenney-fonts[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
+[color=#50e3d5]*** Sound Effects ***[/color]
 
 50 CC0 Tetro Synth SFX
-Link: [url]https://opengameart.org/content/50-cc0-retro-synth-sfx[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
+[url=https://opengameart.org/content/50-cc0-retro-synth-sfx]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
 4 Projectile Launches - by Michel Baradari apollo-music.de
 Link: [url]https://opengameart.org/content/4-projectile-launches[/url]
-License: CC BY 3.0 [url]http://creativecommons.org/licenses/by/3.0/[/url]
+License: [url=http://creativecommons.org/licenses/by/3.0/]CC-BY-3.0[/url]
 
-Kenney UI Audio
-Link: [url]https://kenney.nl/assets/ui-audio[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
-
-Kenney Digital Audio
-Link: [url]https://kenney.nl/assets/digital-audio[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
+Kenney Audio
+[url=https://kenney.nl/assets/ui-audio]Link (UI Audio)[/url] [url=https://kenney.nl/assets/digital-audio]Link (Digital Audio)[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
 Background Loop
-Link: [url]https://freesound.org/people/Leszek_Szary/sounds/368730/[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
+[url=https://freesound.org/people/Leszek_Szary/sounds/368730/]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
 Thwack Sounds - by Jordan Irwin (AntumDeluge)
-Link: [url]https://opengameart.org/content/thwack-sounds[/url]
-License: [url]https://creativecommons.org/publicdomain/zero/1.0/[/url]
+[url=https://opengameart.org/content/thwack-sounds]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
+
+Some sound effects by Eric Matyas
+[url=https://www.soundimage.org]Link[/url]
 
 Interface SFX
-Link: [url]https://www.gamedevmarket.net/asset/interface-sfx-9059/[/url]
-From Humble Bundle
+[url=https://www.gamedevmarket.net/asset/interface-sfx-9059/]Link[/url]
+
+Elemental Magic Sound Effects
+[url=https://www.gamedevmarket.net/asset/elemental-magic-sound-effects-library-vol-1-fire-water-wind-air-earth-wood-fantasy-spells/]Link[/url]
+
+[color=#50e3d5]*** Font ***[/color]
+
+Kenney Mini/Pixel fonts
+[url=https://kenney.nl/assets/kenney-fonts]Link[/url]
+License: [url=https://creativecommons.org/publicdomain/zero/1.0/]CC0[/url]
 
 [/center]

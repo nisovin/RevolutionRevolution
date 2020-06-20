@@ -2,7 +2,7 @@ extends Node
 
 const SolarSystem = preload("res://universe/SolarSystem.tscn")
 
-const skip_start = true
+const skip_start = false
 
 var playing = false
 
@@ -15,6 +15,9 @@ func _ready():
 	$Overlay/VBoxContainer/PlayerName.caret_position = 4
 	$Overlay/VBoxContainer/PlayerName.grab_focus()
 	AudioServer.set_bus_volume_db(0, linear2db(0.5))
+	if OS.has_feature("web"):
+		$Overlay/VBoxContainer/QuitButton.hide()
+		$GUI/PauseMenu/CenterContainer/MarginContainer/VBoxContainer/QuitButton.hide()
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.scancode == KEY_F11:

@@ -94,9 +94,12 @@ func generate():
 	apply_torque_impulse(G.rng.randf_range(-20, 20))
 	
 func _on_Asteroid_body_entered(body):
-	if state == State.PROJECTILE and body.is_in_group("planets"):
-		var planet = body.owner
-		if not planet.has_rings:
+	if state == State.PROJECTILE:
+		if body.is_in_group("planets"):
 			Audio.play("break", 0.4)
-			planet.take_damage(size if state == State.PROJECTILE else 0)
+			body.owner.take_damage(size)
+			queue_free()
+		elif body.is_in_group("rings"):
+			Audio.play("break", 0.4)
+			body.take_damage(size)
 			queue_free()

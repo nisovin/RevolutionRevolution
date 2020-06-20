@@ -12,7 +12,7 @@ enum State { MENU, START, ORBITING, FREE, TRAVELING, GAME_OVER }
 
 var state = State.MENU
 
-var acceleration = 300
+var acceleration = 350
 var max_speed = 500
 var fire_speed = 150
 
@@ -57,9 +57,10 @@ func take_damage(amount, recoverable = false):
 	health -= amount
 	if health <= 0:
 		state = State.GAME_OVER
+		invulnerable = true
 		emit_signal("died")
 		return
-	recover_cooldown = 5
+	recover_cooldown = 3
 	if recovering > 0:
 		recovering *= 0.75
 	if recoverable:
@@ -286,7 +287,7 @@ func cycle_color():
 
 
 func _on_Player_body_entered(body):
-	if body.is_in_group("planets"):
+	if body.is_in_group("planets") or body.is_in_group("rings"):
 		var base_dam = 0
 		var psize = body.get_parent().radius
 		if psize > size * 3:
